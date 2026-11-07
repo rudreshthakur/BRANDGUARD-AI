@@ -34,6 +34,8 @@ def _dedupe(drafts: list[FindingDraft]) -> list[FindingDraft]:
             same_span = d.start == k.start and d.end == k.end
             if same_span and (d.rule_id == k.rule_id or d.category == k.category):
                 dup = True
+            elif d.category == "tone" and d.severity == "low" and d.overlaps(k) and k.evidence_status == "rule_violation":
+                dup = True  # e.g. all-caps inside an already-flagged brand name
             elif d.origin == "ai" and d.overlaps(k):
                 dup = True  # deterministic findings win over AI on the same text
             elif d.rule_id.startswith(("ABSOLUTE", "UNSUPPORTED", "COMPARATIVE")) and k.category == "compliance" \

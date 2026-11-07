@@ -121,3 +121,41 @@ def test_injection_flagged_in_uploaded_document_and_not_auto_approved(ws):  # TC
     assert not any(f["rule_id"].startswith("TERM") and "20%" in f["title"] for f in d["findings"])
     kinds = {(p["kind"], p["term"]) for p in src["proposed_rules"]}
     assert ("preferred", "teammates") in kinds and ("prohibited", "hustle") in kinds
+
+
+# ---- Regression tests from the adversarial probe (weaknesses found and fixed during Round 2 QA) ----
+
+def test_superlative_not_falsely_verified_by_unrelated_digits(ws):
+    # bug: "#1" was "supported" because facts contain the digit 1 ("120 users", "TLS 1.3")
+    d = ws.audit_text("We are the #1 planner for teams.")
+    assert any(f["passage"].startswith("#1") and f["evidence_status"] == "unsupported" for f in d["findings"])
+    assert d["latest_audit"]["verified_claims"] == []
+
+
+def test_guarantee_language_needs_substantiation(ws):
+    d = ws.audit_text("Pulse is guaranteed to save you time.")
+    f = next(x for x in d["findings"] if x["rule_id"] == "ABSOLUTE-guaranteed")
+    assert f["suggestion"] == "designed to save you time"
+
+
+def test_relative_numeric_claim_is_a_comparison_not_a_spec(ws):
+    d = ws.audit_text("Our battery lasts 10 hours longer than rivals.")
+    assert not any(f["evidence_status"] in ("outdated", "verified_conflict") for f in d["findings"])
+    assert any(f["rule_id"] == "COMPARATIVE" for f in d["findings"])
+
+
+def test_number_words_and_compact_units(ws):
+    d = ws.audit_text("Beacon's battery lasts twelve hours.")
+    assert [v["passage"] for v in d["latest_audit"]["verified_claims"]] == ["twelve hours"]
+    d = ws.audit_text("Beacon battery: 10h.")
+    assert d["findings"][0]["evidence_status"] == "outdated" and d["findings"][0]["suggestion"] == "12h"
+
+
+def test_no_duplicate_tone_flags_inside_brand_name(ws):
+    d = ws.audit_text("NORTHSTAR LABS is here.")
+    assert [f["passage"] for f in d["findings"]] == ["NORTHSTAR LABS"]
+
+
+def test_comparative_ignores_rather_than_and_other_than(ws):
+    d = ws.audit_text("We would rather plan than react, other than on Fridays.")
+    assert d["findings"] == []

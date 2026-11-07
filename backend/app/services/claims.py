@@ -20,7 +20,7 @@ from .text_utils import Sentence, split_sentences, tokenize
 
 UNIT_MAP = {
     "%": "%", "percent": "%",
-    "hour": "hours", "hours": "hours", "hr": "hours", "hrs": "hours",
+    "hour": "hours", "hours": "hours", "hr": "hours", "hrs": "hours", "h": "hours",
     "minute": "minutes", "minutes": "minutes", "min": "minutes", "mins": "minutes",
     "day": "days", "days": "days", "week": "weeks", "weeks": "weeks",
     "x": "x", "×": "x", "times": "x",
@@ -32,8 +32,12 @@ UNIT_MAP = {
     "$": "usd", "₹": "inr", "€": "eur", "£": "gbp",
 }
 
-_NUM = r"\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?"
-_UNITS = (r"%|percent\b|hours?\b|hrs?\b|minutes?\b|mins?\b|days?\b|weeks?\b|x\b|×|times\b|apps?\b|integrations?\b|tools\b|"
+NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+                "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17,
+                "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60,
+                "ninety": 90, "hundred": 100}
+_NUM = r"\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?|(?:" + "|".join(sorted(NUMBER_WORDS, key=len, reverse=True)) + r")(?=[\s-])"
+_UNITS = (r"%|percent\b|hours?\b|hrs?\b|h\b|minutes?\b|mins?\b|days?\b|weeks?\b|x\b|×|times\b|apps?\b|integrations?\b|tools\b|"
           r"languages?\b|users?\b|seats\b|members\b|teammates\b|customers\b|teams\b|countries\b|GB\b|TB\b")
 NUMERIC_CLAIM = re.compile(
     rf"(?P<cur>[$₹€£])\s?(?P<mnum>{_NUM})|(?<![\w.])(?P<num>{_NUM})(?P<plus>\+)?\s*(?:-\s*)?(?P<unit>{_UNITS})",
@@ -50,8 +54,10 @@ SUPERLATIVES = [
     (re.compile(r"\b(?:industry|market)[- ]leading\b", re.I), "leading", "medium"),
     (re.compile(r"\b(?:unbeatable|unmatched|unrivalled|unrivaled)\b", re.I), "unmatched", "high"),
     (re.compile(r"\bnever\s+(?:fails|miss(?:es)?)\b", re.I), "never", "high"),
+    (re.compile(r"\bguarantee[sd]?\b", re.I), "guaranteed", "high"),
 ]
-COMPARATIVE = re.compile(r"\b(?:better|faster|cheaper|smarter|more\s+\w+)\s+than\b", re.I)
+COMPARATIVE = re.compile(r"\b(?!(?:rather|other|whether|never|ever|under|over|later|sooner)\b)(?:\w+er|more\s+\w+|less\s+\w+)\s+than\b", re.I)
+RELATIVE_AFTER = re.compile(r"^\s*(?:longer|more|less|fewer|faster|quicker|better|shorter|higher|lower|cheaper|extra)\b", re.I)
 SOFTEN = [
     (re.compile(r"^the\s+best\b", re.I), "a great"),
     (re.compile(r"^best[- ]in[- ]class\b", re.I), "high-quality"),
@@ -60,6 +66,8 @@ SOFTEN = [
     (re.compile(r"^the\s+most\s+(\w+)\b", re.I), lambda m: "a " + m.group(1)),
     (re.compile(r"^(?:industry|market)[- ]leading\b", re.I), "dependable"),
     (re.compile(r"^world'?s\s+\w+(?:\s+\w+)?\b", re.I), "a"),
+    (re.compile(r"^guaranteed\s+to\b", re.I), "designed to"),
+    (re.compile(r"^guarantee[sd]?\b", re.I), "designed"),
 ]
 COMPARATIVE_TAIL = re.compile(r"\s+(?:in|on)\s+the\s+(?:market|world|industry)\b|\s+(?:ever|anywhere)\b", re.I)
 
@@ -82,10 +90,13 @@ def parse_numeric_claims(text: str) -> list[NumericClaim]:
             num_text, unit = m.group("mnum"), UNIT_MAP[m.group("cur")]
         else:
             num_text, unit = m.group("num"), UNIT_MAP.get(m.group("unit").lower(), m.group("unit").lower())
-        try:
-            val = float(num_text.replace(",", ""))
-        except ValueError:
-            continue
+        if num_text.lower() in NUMBER_WORDS:
+            val = float(NUMBER_WORDS[num_text.lower()])
+        else:
+            try:
+                val = float(num_text.replace(",", ""))
+            except ValueError:
+                continue
         claims.append(NumericClaim(text=m.group(0), start=m.start(), end=m.end(), value=val, unit=unit,
                                    plus=bool(m.groupdict().get("plus")), num_text=num_text))
     return claims
@@ -139,6 +150,12 @@ def verify_claims(text: str, ctx: AuditContext) -> tuple[list[FindingDraft], lis
         after = text[claim.end:claim.end + 25]
         before = text[max(sent.start, claim.start - 25):claim.start]
         if claim.unit == "%" and (PROMO_CONTEXT.search(after) or PROMO_CONTEXT.search(before)):
+            continue
+        if RELATIVE_AFTER.match(text[claim.end:sent.end]) and not (claim.unit == "%" and re.match(r"^\s*less\s+time", text[claim.end:sent.end], re.I)):
+            # relative claims ("10 hours longer than rivals") are comparisons, not specifications; the
+            # comparative check below reports them, so don't misread them as fact conflicts
+            if not COMPARATIVE.search(text, claim.end, sent.end):
+                findings.append(_unsupported_numeric(text, sent, claim, ctx, policy_ev))
             continue
         scored = []
         for f in facts:
@@ -238,12 +255,24 @@ def _unsupported_numeric(text, sent: Sentence, claim: NumericClaim, ctx, policy_
         origin="retrieval")
 
 
+CORE_PHRASES = {
+    "best": [r"\bbest\b"], "#1": [r"#\s?1\b", r"\bnumber\s+one\b", r"\bno\.\s?1\b"], "world's": [r"\bworld'?s\b"],
+    "most": [r"\bmost\b", r"\bfastest\b", r"\bsmartest\b", r"\beasiest\b"], "only": [r"\bonly\b"],
+    "leading": [r"\bleading\b"], "unmatched": [r"\bunmatched\b", r"\bunbeatable\b", r"\bunrivall?ed\b"],
+    "never": [r"\bnever\s+fails?\b"], "guaranteed": [r"\bguarantee"],
+}
+
+
 def _support_for(ctx: AuditContext, core: str, sentence: str) -> Fact | None:
-    toks = set(tokenize(sentence))
+    """An approved fact substantiates a superlative only if it contains the same superlative phrase AND
+    shares topical keywords with the sentence (excluding the superlative word itself)."""
+    pats = [re.compile(p, re.I) for p in CORE_PHRASES.get(core, [re.escape(core)])]
+    toks = set(tokenize(sentence)) - set(tokenize(core))
     for f in ctx.retriever.facts:
-        if f.status != "approved":
+        if f.status != "approved" or not any(p.search(f.statement) for p in pats):
             continue
-        if core.lower().strip("#") in f.statement.lower() and toks & set(tokenize(" ".join(f.keywords or []) + " " + f.statement)):
+        topical = set(tokenize(" ".join(f.keywords or []) + " " + f.subject)) - set(tokenize(core))
+        if toks & topical:
             return f
     return None
 
