@@ -4,7 +4,9 @@
 
 ## ⚠️ Status and rule notes (read first)
 
-1. **Deadline:** the Round 2 email states **7 November 2026, 10:00 AM IST**. The team has told us the organisers **extended** the deadline. *TODO: keep a screenshot or copy of the official extension notice and confirm the new deadline on the portal.* Do not submit under the original deadline's assumptions, and do not alter timestamps.
+1. **Deadline and eligibility: UNVERIFIED.** The Round 2 email states **7 November 2026, 10:00 AM IST**. An independent reviewer reports that the official event page says there is **no late window** and that missing the deadline ends participation. (We could not open the official page from our build environment to confirm this.) The team said the deadline was extended, but **no official announcement or written confirmation has been supplied**, so this document does **not** claim an extension.
+   - Every commit in this repository was made on **7 November 2026 between 10:47 PM and 11:07 PM IST** (17:17–17:37 UTC), plus later release-fix commits. That is **after** the original deadline. These timestamps are authentic and must not be changed.
+   - *TODO (team): if the organisers granted an extension, save the email or announcement and add it here. If not, contact the organisers before submitting and follow their answer. Do not describe this as an on-time Round 2 submission without that confirmation.*
 2. **Who submits: conflicting instructions.** The Round 2 email says **only the team leader submits one team entry**. The current event page (wecodecoders.in/events/codenexus-india) says **each member submits individually, declaring their own role and contribution**. We have prepared both versions below. **Follow whatever the live submission portal asks for.** If it is still unclear, email the organisers and keep their reply.
 3. **Round 3 eligibility** is not assumed. Check the portal or email for selection results.
 
@@ -73,7 +75,7 @@ Details are in [ROUND3_ROADMAP.md](ROUND3_ROADMAP.md).
 
 ## 13. Actual testing outcomes
 See [TESTING.md](TESTING.md). Latest run (7 Nov 2026):
-- 46/46 backend tests (SQLite and PostgreSQL)
+- 56/56 backend tests on SQLite and PostgreSQL 16, including 10 provider contract tests using a fake HTTP transport
 - 6/6 frontend unit tests, clean type check, successful production build
 - 16/16 end-to-end browser steps
 - Team-authored synthetic evaluation set: 26/26 expected issues, 0 false positives (a regression benchmark, not independent accuracy)
@@ -89,7 +91,7 @@ See [TESTING.md](TESTING.md). Latest run (7 Nov 2026):
 
 ## 15. AI tools and external services
 - **AI coding assistant:** Anthropic Claude (Claude Opus 5.5, via Claude) generated a substantial share of the code, tests and documentation in this repository, under the team's direction. *TODO: list any other AI tools the team used (e.g. ChatGPT, Copilot) and for what.*
-- **Runtime AI (optional, off by default):** Anthropic Messages API or any OpenAI-compatible Chat Completions API, selected with `BRANDGUARD_LLM_PROVIDER`. Only the submitted text and retrieved approved evidence are sent. Disabled in the default deployment.
+- **Runtime AI (optional, off by default):** Anthropic Messages API or any OpenAI-compatible Chat Completions API, selected with `BRANDGUARD_LLM_PROVIDER`. Only the submitted text and retrieved approved evidence are sent. Disabled in the default deployment. **It has not been tested against a live model**: request and response handling is verified with a fake HTTP transport only.
 - **Open-source libraries:** React, React Router, Tailwind CSS, Vite, lucide-react, @fontsource (IBM Plex Sans, Source Serif 4: SIL OFL), FastAPI, Pydantic, SQLAlchemy, Uvicorn, PyMuPDF (AGPL-3.0; note the licence terms if you distribute), python-docx, Pillow, httpx, psycopg, pytest, Vitest, Playwright.
 - **Pre-existing code or templates:** none. The project was built from scratch in this repository. Northstar Labs is a fictional brand created for this project.
 
@@ -115,7 +117,7 @@ Working link:            Repository:            PDF:
 
 ## Pre-submission checklist
 
-- [ ] Deadline extension confirmed on the portal; proof saved
+- [ ] Deadline/extension status confirmed in writing by the organisers (or eligibility clarified); proof saved
 - [ ] Submission mode confirmed (team leader only vs every member)
 - [ ] Repository pushed to a public GitHub repo; link opens in a private window
 - [ ] App deployed; URL opens in a private window; **Launch demo workspace** works

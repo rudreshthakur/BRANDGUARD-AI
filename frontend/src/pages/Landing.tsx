@@ -69,7 +69,7 @@ export default function Landing() {
           </h1>
           <p className="mt-5 max-w-lg text-lg leading-7 text-graphite">
             BrandGuard reviews marketing content before it’s published. It checks terminology, product facts and claims
-            against your approved knowledge. Each finding cites its source and comes with a small, editable fix.
+            against your approved knowledge. Findings cite the approved source behind them and come with a small, editable fix.
             A person makes the final call.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">

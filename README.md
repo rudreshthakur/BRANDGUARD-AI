@@ -49,7 +49,8 @@ Single-service mode (used for deployment): `cd frontend && npm run build`, then 
 - [API.md](API.md): REST endpoints (interactive OpenAPI docs at `/docs`)
 - [ROUND2_FEATURE_STATUS.md](ROUND2_FEATURE_STATUS.md): what is complete, partial or not built
 - [ROUND3_ROADMAP.md](ROUND3_ROADMAP.md): the three committed Round 3 improvements
-- [SUBMISSION.md](SUBMISSION.md): competition submission information
+- [SUBMISSION.md](SUBMISSION.md): competition submission information, deadline status and checklist
+- [RELEASE_AUDIT.md](RELEASE_AUDIT.md): documentation claims checked against the code; AI provider and repository audit
 
 ## Stack
 
@@ -59,7 +60,7 @@ React 18 + TypeScript + Tailwind CSS (Vite) · Python FastAPI · SQLAlchemy 2 on
 
 - Northstar Labs and all demo data are **synthetic**. Demo submissions are labelled "synthetic sample" and can be excluded from analytics.
 - The role switch (Creator / Reviewer / Admin) is a **demo mechanism**, enforced server-side. It is not production authentication.
-- Retrieval in this build is BM25 lexical search, not embeddings or pgvector; the interface is ready for a swap. AI contextual analysis runs only when a provider key is configured, and the UI always states whether it ran.
+- Retrieval in this build is BM25 lexical search, not embeddings or pgvector; the interface is ready for a swap. AI contextual analysis runs only when a provider key is configured, and the UI always states whether it ran. It has not been tested against a live model.
 - No user research or accuracy metrics are claimed. Test results in TESTING.md are from actual runs.
 
 ## AI assistance disclosure

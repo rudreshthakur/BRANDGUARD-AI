@@ -6,8 +6,10 @@ All results below come from actual runs on **7 November 2026 (UTC)** against com
 
 | Check | Command | Result |
 |---|---|---|
-| Backend unit + API tests (SQLite) | `cd backend && python -m pytest -q` | **46 passed, 0 failed** |
-| Backend tests on PostgreSQL 16 (clean venv from `requirements.txt`) | `DATABASE_URL=postgresql://… python -m pytest -q` | **46 passed, 0 failed** |
+| Backend unit + API tests (SQLite) | `cd backend && python -m pytest -q` | **56 passed, 0 failed** |
+| Backend tests on PostgreSQL 16 (clean venv from `requirements.txt`) | `DATABASE_URL=postgresql://… python -m pytest -q` | **56 passed, 0 failed** |
+| AI provider contract tests (fake HTTP transport) | included in the 56 above | Anthropic and OpenAI-compatible request payloads, headers and URLs; response parsing; fallback on 401, 500, empty responses and timeouts; missing-key, missing-model and unknown-provider reporting |
+| **Live AI model** | – | **Not tested.** No API key was available. |
 | Frontend type check | `cd frontend && npm run typecheck` | **No errors** |
 | Frontend unit tests (Vitest) | `npm test` | **6 passed** |
 | Production frontend build | `npm run build` | **Succeeded** (JS bundle 282 kB, 84 kB gzip) |
@@ -40,7 +42,7 @@ All results below come from actual runs on **7 November 2026 (UTC)** against com
 | 17 | Backend failures give understandable errors | `test_backend_errors_are_understandable`, `test_malformed_ai_output_falls_back_gracefully` |
 | 18 | Unsupported upload formats handled | `test_unsupported_upload_formats` |
 
-Additional coverage: workspace isolation, role permissions, DOCX/PDF metadata, guideline versioning and comparison, visual palette and contrast, brand drift from real data (including excluding samples), security headers, diff endpoint, re-approval after editing approved content.
+Additional coverage: AI provider contracts (`tests/test_llm_providers.py`), workspace isolation, role permissions, DOCX/PDF metadata, guideline versioning and comparison, visual palette and contrast, brand drift from real data (including excluding samples), security headers, diff endpoint, re-approval after editing approved content.
 
 ## End-to-end journey (Playwright)
 

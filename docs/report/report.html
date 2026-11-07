@@ -257,7 +257,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <tr><td>Retrieval</td><td>BM25 (in-process)</td><td>Deterministic, needs no external keys, swappable for pgvector.</td></tr>
     <tr><td>AI (optional)</td><td>Anthropic or OpenAI-compatible API via httpx</td><td>Provider abstraction, temperature 0, strict JSON schema. Off by default.</td></tr>
     <tr><td>Visual</td><td>Pillow</td><td>Median-cut quantisation, CIE76 ΔE, WCAG 2.1 contrast.</td></tr>
-    <tr><td>Testing</td><td>pytest, Vitest, Playwright</td><td>46 backend tests, 6 frontend tests, 16-step E2E journey.</td></tr>
+    <tr><td>Testing</td><td>pytest, Vitest, Playwright</td><td>56 backend tests, 6 frontend tests, 16-step E2E journey.</td></tr>
     <tr><td>Deployment</td><td>Dockerfile, Render blueprint, Vercel config</td><td>Single-service or split hosting.</td></tr>
   </table>
   <h3>Security</h3>
@@ -296,7 +296,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <li>A final validation pass re-checks every evidence item. Findings that need evidence but have none are downgraded to “ambiguous”.</li>
     <li>Pending, rejected or draft knowledge is never used as evidence. Superseded facts are used only to explain outdated claims.</li>
   </ul>
-  <div class="note warn">AI contextual analysis was <b>not tested against a live model</b>: no API key was available while building. The validation logic is tested with a mock provider, including invented evidence IDs, non-verbatim passages and malformed output.</div>
+  <div class="note warn">AI contextual analysis was <b>not tested against a live model</b>: no API key was available while building. The validation logic is tested with a mock provider, including invented evidence IDs, non-verbatim passages and malformed output. Contract tests also check the exact HTTP request each provider sends, plus fallback on authentication errors, server errors, empty responses and timeouts.</div>
 </section>
 
 <section>
@@ -355,7 +355,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
   <h2><span class="n">14</span>Partially completed or omitted</h2>
   <table>
     <tr><th style="width:62mm">Feature</th><th style="width:20mm">Status</th><th>Detail</th></tr>
-    <tr><td>AI contextual analysis</td><td><span class="tag t-part">Partial</span></td><td>Implemented and validated with a mock provider. Not exercised against a live model.</td></tr>
+    <tr><td>AI contextual analysis</td><td><span class="tag t-part">Partial</span></td><td>Implemented. Request and response handling for both providers is verified with a fake HTTP transport (10 contract tests). Not run against a live model.</td></tr>
     <tr><td>Tone analysis</td><td><span class="tag t-part">Partial</span></td><td>Deterministic checks only, unless AI is configured.</td></tr>
     <tr><td>Roles and permissions</td><td><span class="tag t-part">Partial</span></td><td>Enforced server-side but driven by a demo switch. No user accounts.</td></tr>
     <tr><td>Rule extraction from documents</td><td><span class="tag t-part">Partial</span></td><td>Pattern-based proposals that require admin approval.</td></tr>
@@ -373,7 +373,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
   <h2><span class="n">15</span>Testing methodology and results</h2>
   <p>All figures come from runs on 7 November 2026 against the submitted build.</p>
   <div class="kpis">
-    <div><b>46 / 46</b><span>backend tests, on SQLite and on PostgreSQL 16</span></div>
+    <div><b>56 / 56</b><span>backend tests, on SQLite and on PostgreSQL 16</span></div>
     <div><b>16 / 16</b><span>end-to-end browser steps in a fresh context</span></div>
     <div><b>6 / 6</b><span>frontend unit tests; type check and build clean</span></div>
     <div><b>26 / 26</b><span>labelled issues found, 0 false positives, 8/8 clean items</span></div>
@@ -415,14 +415,13 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
   <div class="flow">
   <h2><span class="n">17</span>Team contributions</h2>
   <table>
-    <tr><th style="width:42mm">Member</th><th style="width:50mm">Planned role (Round 1)</th><th>Area of the build</th></tr>
-    <tr><td>Sarthak Agrawal (Lead)</td><td>Integration, architecture, final demo</td><td>Product scope, architecture decisions, integration and demo flow</td></tr>
-    <tr><td>Rudresh Kumar</td><td>Frontend / UI</td><td>React application, proof desk, findings and reviewer interfaces</td></tr>
-    <tr><td>Arpit Singh</td><td>AI / retrieval / evaluation</td><td>Rule engine, claim verification, retrieval, evaluation set</td></tr>
-    <tr><td>Pranjal Gautam</td><td>Backend / database</td><td>FastAPI, data model, workflow, audit log, deployment</td></tr>
+    <tr><th style="width:42mm">Member</th><th style="width:52mm">Planned role (Round 1 proposal)</th><th>Actual contribution</th></tr>
+    <tr><td>Sarthak Agrawal (Lead)</td><td>Integration, architecture, final demo</td><td>Stated by the member in their individual submission</td></tr>
+    <tr><td>Rudresh Kumar</td><td>Frontend / UI</td><td>Stated by the member in their individual submission</td></tr>
+    <tr><td>Arpit Singh</td><td>AI / retrieval / evaluation</td><td>Stated by the member in their individual submission</td></tr>
+    <tr><td>Pranjal Gautam</td><td>Backend / database</td><td>Stated by the member in their individual submission</td></tr>
   </table>
-  <div class="note warn"><b>AI assistance disclosure.</b> A substantial share of the code, tests and documentation was produced with an AI coding assistant (Anthropic Claude) under the team’s direction. The areas above map the build to the planned roles. Each member’s own contribution statement is provided separately in the submission, as the rules require. No pre-existing code or templates were used.</div>
-
+  <div class="note warn"><b>AI assistance disclosure.</b> A substantial share of the code, tests and documentation in this build was produced with an AI coding assistant (Anthropic Claude) under the team’s direction. This report does not attribute specific parts of the build to individual members. Each member describes their own actual work in their individual submission, as the event rules require. No pre-existing code or templates were used.</div>
   </div>
 </section>
 <section>

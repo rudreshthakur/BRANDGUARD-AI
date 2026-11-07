@@ -66,7 +66,7 @@ class AnthropicProvider:
             (settings.llm_base_url or "https://api.anthropic.com") + "/v1/messages",
             headers={"x-api-key": settings.llm_api_key, "anthropic-version": "2023-06-01",
                      "content-type": "application/json"},
-            json={"model": settings.llm_model or "claude-haiku-5-5", "max_tokens": 1500, "temperature": 0,
+            json={"model": settings.llm_model or ANTHROPIC_DEFAULT_MODEL, "max_tokens": 1500, "temperature": 0,
                   "system": system, "messages": [{"role": "user", "content": user}]},
             timeout=settings.llm_timeout_s)
         r.raise_for_status()
@@ -80,7 +80,7 @@ class OpenAICompatibleProvider:
         r = httpx.post(
             (settings.llm_base_url or "https://api.openai.com/v1") + "/chat/completions",
             headers={"authorization": f"Bearer {settings.llm_api_key}", "content-type": "application/json"},
-            json={"model": settings.llm_model or "gpt-4o-mini", "temperature": 0,
+            json={"model": settings.llm_model, "temperature": 0,
                   "response_format": {"type": "json_object"},
                   "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]},
             timeout=settings.llm_timeout_s)
@@ -97,26 +97,48 @@ class MockProvider:
         return MockProvider.next_response
 
 
+ANTHROPIC_DEFAULT_MODEL = "claude-haiku-5-5"
+SUPPORTED = ("none", "anthropic", "openai", "mock")
+
+
+def config_problem() -> str | None:
+    """Why the configured provider can't run, or None if it can (or AI is intentionally off)."""
+    p = settings.llm_provider
+    if p not in SUPPORTED:
+        return f"Unknown BRANDGUARD_LLM_PROVIDER '{p}'. Use none, anthropic or openai."
+    if p in ("none", "mock"):
+        return None
+    if not settings.llm_api_key:
+        return f"BRANDGUARD_LLM_PROVIDER is '{p}' but BRANDGUARD_LLM_API_KEY is not set."
+    if p == "openai" and not settings.llm_model:
+        return "BRANDGUARD_LLM_MODEL is required for OpenAI-compatible providers."
+    return None
+
+
 def get_provider() -> Provider | None:
     p = settings.llm_provider
     if p == "mock":
         return MockProvider()
-    if not settings.llm_api_key:
+    if p == "none" or config_problem():
         return None
-    if p == "anthropic":
-        return AnthropicProvider()
-    if p == "openai":
-        return OpenAICompatibleProvider()
-    return None
+    return AnthropicProvider() if p == "anthropic" else OpenAICompatibleProvider()
+
+
+def _model_name() -> str:
+    if settings.llm_provider == "anthropic":
+        return settings.llm_model or ANTHROPIC_DEFAULT_MODEL
+    return settings.llm_model or "mock"
 
 
 def ai_status() -> dict:
+    problem = config_problem()
     prov = get_provider()
     if prov is None:
-        return {"enabled": False, "provider": None, "model": None,
-                "message": "AI contextual analysis is not configured. Deterministic rules and evidence retrieval are active."}
-    return {"enabled": True, "provider": prov.name, "model": settings.llm_model or "provider default",
-            "message": f"AI contextual analysis enabled via {prov.name}."}
+        msg = ("AI contextual analysis is off. " + problem if problem else
+               "AI contextual analysis is not configured.") + " Deterministic rules and evidence retrieval are active."
+        return {"enabled": False, "provider": None, "model": None, "message": msg, "config_error": problem}
+    return {"enabled": True, "provider": prov.name, "model": _model_name(),
+            "message": f"AI contextual analysis enabled via {prov.name} ({_model_name()}).", "config_error": None}
 
 
 def _extract_json(raw: str) -> dict:
@@ -136,7 +158,10 @@ def analyse(text: str, channel: str, retriever: Retriever, validator: EvidenceVa
     """Returns (findings, ai_mode, status_message)."""
     provider = provider or get_provider()
     if provider is None:
-        return [], "disabled", "AI contextual analysis unavailable (no provider configured). Deterministic checks and evidence retrieval ran normally."
+        problem = config_problem()
+        return [], "disabled", (f"AI contextual analysis unavailable ({problem})" if problem else
+                                "AI contextual analysis unavailable (no provider configured).") + \
+            " Deterministic checks and evidence retrieval ran normally."
     docs = retriever.guideline_evidence(text, k=6, min_score=0.5)
     fact_docs = [retriever.by_id[f.id] for f in retriever.facts if f.status == "approved"][:12]
     allowed = {d.id for d in docs} | {d.id for d in fact_docs}
@@ -147,7 +172,7 @@ def analyse(text: str, channel: str, retriever: Retriever, validator: EvidenceVa
     try:
         raw = provider.complete(SYSTEM_PROMPT, user)
         parsed = AIResponse.model_validate(_extract_json(raw))
-    except (httpx.HTTPError, ValueError, ValidationError, KeyError, json.JSONDecodeError) as exc:
+    except (httpx.HTTPError, ValueError, ValidationError, KeyError, IndexError, TypeError) as exc:
         return [], f"{provider.name}:error", f"AI analysis failed ({type(exc).__name__}); deterministic results shown."
 
     out: list[FindingDraft] = []
