@@ -154,7 +154,9 @@ def main() -> int:
         m = browser.new_context(viewport={"width": 390, "height": 844}, storage_state=ctx.storage_state()).new_page()
         m.goto(BASE + "/app/overview")
         expect(m.get_by_role("button", name="Open menu")).to_be_visible()
-        m.screenshot(path=OUT / "16_mobile.png", full_page=True)
+        expect(m.get_by_text("Recent content")).to_be_visible()
+        m.wait_for_timeout(400)
+        m.screenshot(path=OUT / "16_mobile.png", full_page=False)
         step("Responsive layout on a 390px viewport")
 
         browser.close()

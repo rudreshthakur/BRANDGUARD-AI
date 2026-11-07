@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BrandGuard AI — Round 2 Project Report — Team Khiladi 786</title>
+<style>
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-400-normal.woff2); font-weight: 400; }
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-500-normal.woff2); font-weight: 500; }
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-600-normal.woff2); font-weight: 600; }
+@font-face { font-family: "Serif"; src: url(fonts/source-serif-4-latin-400-normal.woff2); font-weight: 400; }
+@font-face { font-family: "Serif"; src: url(fonts/source-serif-4-latin-400-italic.woff2); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Serif"; src: url(fonts/source-serif-4-latin-600-normal.woff2); font-weight: 600; }
+@page { size: A4; }
+:root { --ink:#16213A; --g:#3D4556; --m:#6B7385; --edge:#E3E6EC; --paper:#F6F7F9; --proof:#2949C6; --tint:#EAEEFB;
+        --crit:#A1161B; --high:#C2410C; --med:#A15C07; --ok:#18794E; --gap:#7A4BC2; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: "Plex", sans-serif; color: var(--ink); font-size: 9.5pt; line-height: 1.45; margin: 0; }
+h1, h2, h3 { letter-spacing: -0.01em; margin: 0; }
+h2 { font-size: 17pt; font-weight: 600; margin: 0 0 8pt; padding-top: 2pt; }
+h2 .n { color: var(--m); font-weight: 500; margin-right: 6pt; }
+h3 { font-size: 11pt; font-weight: 600; margin: 12pt 0 4pt; }
+p { margin: 0 0 7pt; color: var(--g); max-width: 165mm; }
+.lead { font-family: "Serif"; font-size: 12pt; line-height: 1.55; color: var(--ink); }
+section { break-before: page; }
+section.flow { break-before: auto; margin-top: 18pt; }
+ul { margin: 0 0 8pt; padding-left: 14pt; color: var(--g); } li { margin: 2pt 0; }
+table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; font-size: 8.6pt; break-inside: auto; }
+th { text-align: left; font-weight: 600; color: var(--m); border-bottom: 1px solid var(--ink); padding: 4pt 6pt 4pt 0; }
+td { border-bottom: 1px solid var(--edge); padding: 3.5pt 6pt 3.5pt 0; vertical-align: top; color: var(--g); }
+td:first-child { color: var(--ink); font-weight: 500; }
+tr { break-inside: avoid; }
+.shot { border: 1px solid var(--edge); border-radius: 4pt; width: 100%; display: block; }
+figure { margin: 6pt 0 12pt; break-inside: avoid; }
+figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; }
+.note { background: var(--paper); border-left: 2.5pt solid var(--proof); padding: 7pt 10pt; margin: 8pt 0; font-size: 9.3pt; color: var(--g); break-inside: avoid; }
+.warn { border-left-color: var(--med); }
+.tag { display: inline-block; font-size: 8pt; font-weight: 500; padding: 0.5pt 4pt; border-radius: 2pt; }
+.t-ok { background:#E7F5EE; color: var(--ok); } .t-part { background:#FDF3E1; color: var(--med); } .t-no { background:#EEF0F4; color: var(--g); }
+.mono { font-family: ui-monospace, Menlo, monospace; font-size: 8.5pt; }
+/* cover */
+.cover { height: 257mm; display: flex; flex-direction: column; break-after: page; }
+.cover .brand { display: flex; align-items: center; gap: 8pt; font-weight: 600; font-size: 13pt; }
+.cover h1 { font-size: 40pt; line-height: 1.05; font-weight: 600; margin-top: 60mm; letter-spacing: -0.02em; }
+.cover .sub { font-family: "Serif"; font-size: 16pt; color: var(--g); margin-top: 8pt; max-width: 150mm; }
+.proof { margin-top: 18mm; border: 1px solid var(--edge); border-radius: 5pt; padding: 12pt 14pt; font-family: "Serif"; font-size: 15pt; line-height: 1.7; max-width: 160mm; }
+.proof .gap { background: #F1EBFB; text-decoration: underline wavy #7A4BC2; text-underline-offset: 4pt; text-decoration-thickness: 1.2pt; }
+.proof small { display: block; font-family: "Plex"; font-size: 8.5pt; color: var(--m); margin-top: 6pt; line-height: 1.4; }
+.cover dl { margin-top: auto; display: grid; grid-template-columns: 34mm 1fr; gap: 3pt 10pt; font-size: 9.5pt; }
+.cover dt { color: var(--m); } .cover dd { margin: 0; }
+/* diagrams */
+.flowline { display: flex; align-items: stretch; gap: 0; margin: 10pt 0 6pt; }
+.flowline .step { flex: 1; border: 1px solid var(--edge); padding: 7pt 8pt; background: #fff; position: relative; }
+.flowline .step + .step { border-left: none; }
+.flowline .step b { display: block; font-size: 9pt; color: var(--ink); margin-bottom: 2pt; }
+.flowline .step span { font-size: 8pt; color: var(--m); line-height: 1.35; display: block; }
+.flowline .step i { font-style: normal; font-size: 8pt; color: var(--proof); font-weight: 600; }
+.arch { display: grid; gap: 6pt; margin: 8pt 0; }
+.arch .row { display: grid; gap: 6pt; }
+.arch .box { border: 1px solid var(--edge); border-radius: 3pt; padding: 6pt 8pt; background: #fff; font-size: 8.5pt; color: var(--g); }
+.arch .box b { display: block; color: var(--ink); font-size: 9pt; }
+.arch .ink { background: var(--ink); border-color: var(--ink); color: #C9D0DE; } .arch .ink b { color: #fff; }
+.arch .tint { background: var(--tint); border-color: #D3DBF6; }
+.arch .down { text-align: center; color: var(--m); font-size: 9pt; line-height: 1; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--edge); border-radius: 4pt; margin: 8pt 0 10pt; }
+.kpis div { padding: 8pt 10pt; border-left: 1px solid var(--edge); } .kpis div:first-child { border-left: none; }
+.kpis b { display: block; font-size: 16pt; font-weight: 600; } .kpis span { font-size: 8.5pt; color: var(--m); }
+.toc { columns: 2; column-gap: 12mm; font-size: 10pt; margin-top: 6pt; } .toc div { break-inside: avoid; padding: 2.5pt 0; border-bottom: 1px solid var(--edge); color: var(--g); }
+.toc span { color: var(--m); display: inline-block; width: 7mm; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand"><svg width="22" height="22" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#16213A"/><path d="M10 8v16" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M10 9h7a4 4 0 0 1 0 8h-7" fill="none" stroke="#fff" stroke-width="2.6"/><path d="M10 17h8.5a4 4 0 0 1 0 8H10" fill="none" stroke="#2949C6" stroke-width="2.6"/></svg> BrandGuard AI</div>
+  <h1>Brand governance,<br>before publishing.</h1>
+  <div class="sub">Round 2 project report: the product as built, tested and documented.</div>
+  <div class="proof">Our new product improves productivity <span class="gap">by 50%</span> and is <span class="gap">the best solution in the market</span>.
+    <small>Real output from the BrandGuard engine for a synthetic sample. Both phrases are flagged “Unable to verify against approved knowledge”, citing the Northstar Brand Guidelines v3, p. 3, Claims Policy. Each has a suggested minimal edit.</small></div>
+  <dl>
+    <dt>Competition</dt><dd>CodeNexus India 2026 · Round 2: The Build</dd>
+    <dt>Team</dt><dd>Khiladi 786</dd>
+    <dt>Members</dt><dd>Sarthak Agrawal (Team Lead), Rudresh Kumar, Arpit Singh, Pranjal Gautam</dd>
+    <dt>Report date</dt><dd>7 November 2026</dd>
+    <dt>Demo data</dt><dd>All brand data shown is synthetic. Northstar Labs is a fictional company.</dd>
+  </dl>
+</div>
+
+<section style="break-before:auto">
+  <h2>Contents</h2>
+  <div class="toc">
+    <div><span>1</span>Title and team details</div><div><span>2</span>Problem statement</div><div><span>3</span>Target users</div>
+    <div><span>4</span>Product vision</div><div><span>5</span>Implemented workflow</div><div><span>6</span>Core features</div>
+    <div><span>7</span>Screenshots from the application</div><div><span>8</span>Technical architecture</div><div><span>9</span>Technology and implementation</div>
+    <div><span>10</span>Evidence retrieval and analysis</div><div><span>11</span>Correction and approval workflow</div><div><span>12</span>Original plan vs implementation</div>
+    <div><span>13</span>Features completed</div><div><span>14</span>Partially completed or omitted</div><div><span>15</span>Testing methodology and results</div>
+    <div><span>16</span>Known limitations</div><div><span>17</span>Team contributions</div><div><span>18</span>Three Round 3 improvements</div>
+  </div>
+
+  <div class="flow" style="margin-top:14pt">
+  <h2><span class="n">1</span>Title and team details</h2>
+  <table>
+    <tr><th style="width:42mm">Field</th><th>Detail</th></tr>
+    <tr><td>Project</td><td>BrandGuard AI: an evidence-grounded brand compliance platform</td></tr>
+    <tr><td>Tagline</td><td>Brand governance, before publishing.</td></tr>
+    <tr><td>Team</td><td>Khiladi 786 (four members)</td></tr>
+    <tr><td>Members and planned roles</td><td>Sarthak Agrawal: team lead, integration, architecture, final demo · Rudresh Kumar: frontend / UI · Arpit Singh: AI, retrieval and evaluation · Pranjal Gautam: backend and database</td></tr>
+    <tr><td>Working application</td><td>Deployment pending (Render blueprint included). The link is added in the submission form once deployed.</td></tr>
+    <tr><td>Source repository</td><td>Public GitHub link added in the submission form.</td></tr>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Problem statement</h2>
+  <p class="lead">Organisations now publish through employees, agencies, freelancers and AI tools, faster than any reviewer can read. Their brand governance knowledge is scattered across PDF guidelines, spec sheets, approved-claim lists, shared drives, emails and informal instructions.</p>
+  <p>This produces four recurring failures, which BrandGuard is designed around:</p>
+  <table>
+    <tr><th style="width:42mm">Failure</th><th>What happens</th><th style="width:62mm">How BrandGuard responds</th></tr>
+    <tr><td>Knowledge fragmentation</td><td>Creators don’t know which guideline or product fact is authoritative and current.</td><td>One approved, versioned knowledge base. Only approved, current sources count as evidence.</td></tr>
+    <tr><td>Inconsistent interpretation</td><td>Teams and agencies apply tone, terminology and visual rules differently.</td><td>Deterministic rules applied identically to every submission.</td></tr>
+    <tr><td>Late discovery</td><td>Wrong claims are found after drafting, during approval, or after publication.</td><td>A pre-publication audit the creator runs before submitting.</td></tr>
+    <tr><td>Weak traceability</td><td>Reviewers reject content without citing which rule or source applies.</td><td>Every finding cites a validated source: document, page, section, excerpt, ID.</td></tr>
+  </table>
+  <div class="note">We have not yet conducted the user interviews planned in Round 1, and this report makes no claims about market validation, time savings or real-world accuracy.</div>
+
+  <div class="flow">
+  <h2><span class="n">3</span>Target users</h2>
+  <table>
+    <tr><th style="width:42mm">User</th><th>Need</th><th style="width:70mm">What they use in the build</th></tr>
+    <tr><td>Content creators</td><td>Fast, specific feedback without losing their message</td><td>Content Auditor, redline findings, accept/edit/reject fixes</td></tr>
+    <tr><td>Brand and marketing managers</td><td>Consistent review across teams and channels</td><td>Review Queue, decisions with notes, Brand Drift dashboard</td></tr>
+    <tr><td>Legal and compliance reviewers</td><td>Unsupported and risky claims surfaced early</td><td>Forbidden-claim rules, claim verification, override justification</td></tr>
+    <tr><td>Agencies and freelancers</td><td>Access to current approved rules</td><td>Brand Knowledge (read-only for non-admins), cited evidence</td></tr>
+    <tr><td>Organisation administrators</td><td>Control over guidelines, facts, versions</td><td>Document ingestion and approval, fact supersession, rule management</td></tr>
+  </table>
+  </div>
+
+</section>
+
+<section>
+  <div>
+  <h2><span class="n">4</span>Product vision</h2>
+  <p class="lead">Most AI marketing tools help create content. BrandGuard helps organisations decide whether content is safe, accurate and consistent enough to publish, with traceable reasons and human control.</p>
+  <p>Three principles from Round 1 shaped every implementation decision: <b>evidence before judgement</b>, <b>correction rather than rejection</b>, and <b>human control over publication</b>. The language model is an assistant, not the source of truth. Approved facts and rules live in the organisation’s controlled knowledge base, exact checks are deterministic code, and a person always makes the final decision.</p>
+  </div>
+  <div class="flow">
+  <h2><span class="n">5</span>Implemented workflow</h2>
+  <p>The scored Round 2 workflow is fully functional with no login and no API key:</p>
+  <div class="flowline">
+    <div class="step"><i>1</i><b>Content input</b><span>Paste copy, choose one of 7 channels</span></div>
+    <div class="step"><i>2</i><b>Approved knowledge check</b><span>Approved, current, same-workspace sources only</span></div>
+    <div class="step"><i>3</i><b>Issue detection</b><span>Rules, claim verification, injection scan, optional AI</span></div>
+    <div class="step"><i>4</i><b>Explanations and evidence</b><span>Validated citations or “Unable to verify”</span></div>
+    <div class="step"><i>5</i><b>Human decision</b><span>Accept/edit/reject, request changes, approve</span></div>
+  </div>
+  <p>Inside the product, this maps to the eight-step journey proposed in Round 1:</p>
+  <table>
+    <tr><th style="width:8mm">#</th><th style="width:38mm">Round 1 step</th><th>As built</th></tr>
+    <tr><td>1</td><td>Set up the brand</td><td>“Launch demo workspace” creates a private, seeded workspace. “Start with my own brand” creates an empty one.</td></tr>
+    <tr><td>2</td><td>Prepare knowledge</td><td>Upload → validate → extract (page and section kept) → chunk → admin review → approve → index. Rules found in documents are proposed, never auto-applied.</td></tr>
+    <tr><td>3</td><td>Submit content</td><td>Paste text with title and channel. Seven synthetic samples available.</td></tr>
+    <tr><td>4</td><td>Run checks</td><td>Security scan → deterministic rules → claim verification → BM25 policy retrieval → optional AI → evidence validation.</td></tr>
+    <tr><td>5</td><td>Review findings</td><td>Redline manuscript plus finding cards: severity, evidence status, explanation, citations, confidence, suggestion. Filters by severity, type and status.</td></tr>
+    <tr><td>6</td><td>Revise and collaborate</td><td>Accept, edit or reject each suggestion. Comments. Every change is a new immutable version.</td></tr>
+    <tr><td>7</td><td>Approve</td><td>Draft → Under review → Changes requested → Revised → Approved, with every decision logged.</td></tr>
+    <tr><td>8</td><td>Learn</td><td>Brand Drift Intelligence: recurring rules, terms and unverified claims, plus clarity signals.</td></tr>
+  </table>
+  </div>
+
+  <div class="flow">
+  <h2><span class="n">6</span>Core features</h2>
+  <table>
+    <tr><th style="width:42mm">Module</th><th>Implemented capability</th></tr>
+    <tr><td>Brand Knowledge Hub</td><td>PDF/DOCX/TXT/MD ingestion with page and section metadata, approval states, explicit document versioning with section comparison, approved facts with value, unit, keywords and effective date, fact supersession, six rule types with channel scope.</td></tr>
+    <tr><td>Content Auditor</td><td>Boundary-aware terminology and brand-name checks. Claim verification classifies each claim as verified, conflict, outdated or unsupported. Superlative, guarantee and comparative checks; tone and clarity checks; prompt-injection detection; optional validated AI.</td></tr>
+    <tr><td>Visual Inspector (basic)</td><td>Dominant-colour palette compliance (ΔE) with palette evidence, exact WCAG contrast checker, heuristic contrast flag. All visual findings need human confirmation.</td></tr>
+    <tr><td>Correction Engine</td><td>Minimal-span suggestions shown as original, suggested and reason. Accept, edit or reject. Immutable versions, word-level diff, re-anchoring of remaining findings.</td></tr>
+    <tr><td>Review Workflow</td><td>Creator / Reviewer / Admin (demo role switch, enforced server-side), five-state lifecycle, comments, justification required to approve with open high-severity findings, append-only audit log.</td></tr>
+    <tr><td>Insights</td><td>Brand Drift Intelligence computed from stored records. Synthetic samples can be excluded.</td></tr>
+  </table>
+  <h3>The three Round 1 differentiators, as working features</h3>
+  <ul>
+    <li><b>Evidence Traceability Engine:</b> evidence is reloaded from the database by ID. Unknown, unapproved or unretrieved IDs are rejected. Claims without support say “Unable to verify against approved knowledge”, which marks an evidence gap, not proof the claim is false.</li>
+    <li><b>Brand Drift Intelligence:</b> most-triggered rules with submission spread, repeated terms, recurring unverified claims, a channel × category matrix, creator responses, <i>guideline clarity signals</i> (rules creators keep rejecting) and <i>training signals</i> (rules recurring across submissions).</li>
+    <li><b>Intent-Preserving Corrections:</b> only the flagged span changes, e.g. “10 hours” → “12 hours” or “cheap” → “affordable”. The creator’s original is never overwritten.</li>
+  </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Screenshots from the application</h2>
+  <p>All screenshots were captured by the automated end-to-end test from the actual build, in a fresh browser context.</p>
+  <figure><img class="shot" src="img/landing.jpg"><figcaption>Landing page. One click launches a private demo workspace with no sign-up.</figcaption></figure>
+  <figure><img class="shot" src="img/unsupported.jpg"><figcaption>The proof desk: redline manuscript (wavy = unverified claim) beside findings with citations and minimal suggested edits.</figcaption></figure>
+</section>
+<section>
+  <figure><img class="shot" src="img/outdated.jpg"><figcaption>Outdated specification: “10 hours” matches the superseded Spec Sheet v1. The current approved fact (v2, 12 hours) is cited alongside it. “90 minutes” is shown as verified.</figcaption></figure>
+  <div class="two">
+    <figure><img class="shot" src="img/evidence.jpg"><figcaption>Evidence drawer: document, page, section, evidence ID, approval status and surrounding source text.</figcaption></figure>
+    <figure><img class="shot" src="img/compliant.jpg"><figcaption>Compliant sample: no findings; each figure is verified with its citation.</figcaption></figure>
+  </div>
+</section>
+<section>
+  <figure><img class="shot" src="img/versions.jpg"><figcaption>After accepting a correction: version 2 is created and the diff shows the original preserved.</figcaption></figure>
+  <figure><img class="shot" src="img/approved.jpg"><figcaption>Reviewer approval recorded with a note. Approving with open high-severity findings would require a written justification.</figcaption></figure>
+</section>
+<section>
+  <figure><img class="shot" src="img/knowledge.jpg"><figcaption>Uploading Guidelines v4 as a new version: it stays pending, embedded “ignore all previous instructions” text is flagged, and extracted rules are only proposed.</figcaption></figure>
+  <figure><img class="shot" src="img/queue.jpg"><figcaption>Review Queue grouped by workflow state.</figcaption></figure>
+</section>
+<section>
+  <figure><img class="shot" src="img/analytics.jpg"><figcaption>Brand Drift Intelligence computed from stored audits. The banner states how many submissions are synthetic samples.</figcaption></figure>
+  <div class="two">
+    <figure><img class="shot" src="img/visual.jpg"><figcaption>Visual Inspector on the synthetic off-brand creative: off-palette colours with palette evidence, and a contrast flag that needs human confirmation.</figcaption></figure>
+    <figure><img class="shot" src="img/mobile.jpg" style="width:52%;margin:0 auto"><figcaption style="text-align:center">Responsive layout at 390 px.</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Technical architecture</h2>
+  <div class="arch">
+    <div class="row" style="grid-template-columns:1fr"><div class="box ink"><b>React 18 + TypeScript + Tailwind (Vite)</b>Landing · Overview · Content Auditor · Proof desk · Review Queue · Brand Knowledge · Visual Inspector · Brand Drift · Audit History · Settings</div></div>
+    <div class="down">↓ JSON over HTTPS, with workspace token and demo role headers</div>
+    <div class="row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="box"><b>Public API</b>health, status, samples, demo workspace creation (rate-limited)</div>
+      <div class="box"><b>Knowledge API</b>sources, facts, rules, evidence lookup, version compare</div>
+      <div class="box"><b>Submissions API</b>audit, versions, corrections, comments, transitions, diff</div>
+      <div class="box"><b>Workspace API</b>settings, analytics, events, visual inspection</div>
+    </div>
+    <div class="down">↓</div>
+    <div class="row" style="grid-template-columns:repeat(5,1fr)">
+      <div class="box tint"><b>Security scan</b>embedded-instruction detection</div>
+      <div class="box tint"><b>Rule engine</b>terms, names, forbidden claims, required phrases, limits, tone</div>
+      <div class="box tint"><b>Claim verifier</b>unit + context matching against approved facts</div>
+      <div class="box tint"><b>BM25 retrieval</b>approved, workspace-scoped policy passages</div>
+      <div class="box tint"><b>AI analysis</b>optional, strict schema, verbatim and ID validation</div>
+    </div>
+    <div class="down">↓ deduplicate → <b>evidence validation</b> (reload by ID, reject unknown) → persist</div>
+    <div class="row" style="grid-template-columns:1fr 1fr 1fr"><div class="box"><b>Correction and workflow service</b>immutable versions, re-anchoring, state machine</div><div class="box"><b>Brand Drift analytics</b>aggregates from stored records</div><div class="box"><b>Ingestion and visual services</b>PyMuPDF / python-docx · Pillow</div></div>
+    <div class="down">↓ SQLAlchemy 2</div>
+    <div class="row" style="grid-template-columns:1fr"><div class="box ink"><b>PostgreSQL (production) · SQLite (local)</b>workspaces · sources · chunks · facts · terms · submissions · content_versions · audit_runs · findings · corrections · comments · review_decisions · audit_events</div></div>
+  </div>
+  <p>In production the FastAPI service also serves the built frontend, so judges get one URL and there are no cross-origin issues. A Render blueprint provisions the web service and a managed PostgreSQL database.</p>
+
+</section>
+<section>
+  <div>
+  <h2><span class="n">9</span>Technology and implementation details</h2>
+  <table>
+    <tr><th style="width:38mm">Layer</th><th style="width:52mm">Technology</th><th>Notes</th></tr>
+    <tr><td>Frontend</td><td>React 18, TypeScript (strict), Tailwind CSS, React Router, Vite</td><td>Redline manuscript component, evidence drawer, role switch, accessible controls, error boundary.</td></tr>
+    <tr><td>Backend</td><td>Python, FastAPI, Pydantic 2</td><td>Validated request models, consistent human-readable errors, security headers.</td></tr>
+    <tr><td>Data</td><td>SQLAlchemy 2, PostgreSQL / SQLite</td><td>CHECK and UNIQUE constraints, cascade deletes, workspace scoping on every query.</td></tr>
+    <tr><td>Ingestion</td><td>PyMuPDF, python-docx</td><td>Magic-byte validation, page numbers, heading-based sections, injection flags.</td></tr>
+    <tr><td>Retrieval</td><td>BM25 (in-process)</td><td>Deterministic, needs no external keys, swappable for pgvector.</td></tr>
+    <tr><td>AI (optional)</td><td>Anthropic or OpenAI-compatible API via httpx</td><td>Provider abstraction, temperature 0, strict JSON schema. Off by default.</td></tr>
+    <tr><td>Visual</td><td>Pillow</td><td>Median-cut quantisation, CIE76 ΔE, WCAG 2.1 contrast.</td></tr>
+    <tr><td>Testing</td><td>pytest, Vitest, Playwright</td><td>44 backend tests, 6 frontend tests, 16-step E2E journey.</td></tr>
+    <tr><td>Deployment</td><td>Dockerfile, Render blueprint, Vercel config</td><td>Single-service or split hosting.</td></tr>
+  </table>
+  <h3>Security</h3>
+  <ul>
+    <li>Per-workspace random token, stored hashed and compared in constant time. Missing and forbidden workspaces return the same 404.</li>
+    <li>Role permissions enforced server-side: only admins change knowledge, only reviewers approve. The role switch is labelled as a demo mechanism.</li>
+    <li>Upload type, magic-byte and size validation. Documents are parsed in memory and stored as text only. Demo creation is rate-limited, and sandboxes expire after 72 hours.</li>
+    <li>LLM keys stay server-side. Submitted content and documents are always treated as data.</li>
+  </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">10</span>Evidence retrieval and analysis methodology</h2>
+  <h3>Claim verification against approved facts</h3>
+  <ol style="color:var(--g);padding-left:14pt;margin:0 0 8pt">
+    <li>Extract numeric claims (digits or number words; %, multipliers, durations, counts, currency) and normalise units.</li>
+    <li>Skip promotional offers (“40% off”), which numeric-limit rules cover. Treat relative claims (“10 hours longer than…”) as comparisons.</li>
+    <li>Find approved or superseded facts with the same unit and at least one keyword within an eight-word window. The product subject adds weight.</li>
+    <li>Compare values: equal to a current fact → <span class="tag t-ok">verified</span>; equal to a superseded fact → <span class="tag t-part">outdated</span> (cites current and superseded facts); different → <span class="tag" style="background:#FDEEE4;color:var(--high)">verified conflict</span>; no candidate → <span class="tag" style="background:#F1EBFB;color:var(--gap)">unable to verify</span>.</li>
+    <li>Superlatives, guarantees and comparatives need an approved fact containing the same superlative phrase and sharing topic keywords.</li>
+  </ol>
+  <h3>Five evidence outcomes, kept distinct in the interface</h3>
+  <table>
+    <tr><th style="width:42mm">Status</th><th>Meaning</th></tr>
+    <tr><td>Confirmed rule violation</td><td>Breaks an approved rule. The rule and its source page are cited.</td></tr>
+    <tr><td>Verified conflict</td><td>An approved fact covers the same point with a different value.</td></tr>
+    <tr><td>Outdated</td><td>Matches a value that was approved but has been superseded.</td></tr>
+    <tr><td>Unsupported (unable to verify)</td><td>Needs substantiation but no approved evidence exists. An evidence gap, not proof the claim is false.</td></tr>
+    <tr><td>Ambiguous</td><td>Related knowledge exists but doesn’t settle the question.</td></tr>
+  </table>
+  <h3>Preventing fabricated citations</h3>
+  <ul>
+    <li>Evidence shown to users is always rebuilt from the database by ID. Model-written excerpts are never displayed.</li>
+    <li>AI output must parse against a strict schema. Each <i>passage</i> must appear verbatim in the content, and each evidence ID must be in the retrieved set and share vocabulary with the claim. Anything else is dropped, and the audit records how many items were removed.</li>
+    <li>A final validation pass re-checks every evidence item. Findings that need evidence but have none are downgraded to “ambiguous”.</li>
+    <li>Pending, rejected or draft knowledge is never used as evidence. Superseded facts are used only to explain outdated claims.</li>
+  </ul>
+  <div class="note warn">AI contextual analysis was <b>not tested against a live model</b>: no API key was available while building. The validation logic is tested with a mock provider, including invented evidence IDs, non-verbatim passages and malformed output.</div>
+</section>
+
+<section>
+  <h2><span class="n">11</span>Correction and approval workflow</h2>
+  <h3>Corrections</h3>
+  <ul>
+    <li>Each suggestion changes only the flagged span and is shown as <b>original | suggested | reason</b>.</li>
+    <li><b>Accept</b> applies the suggestion, <b>Edit</b> applies the creator’s own text, and <b>Reject</b> keeps the original and records an optional reason, which is shared with the reviewer and feeds the clarity signals.</li>
+    <li>Every accepted or edited correction creates a new immutable version. The remaining findings are re-anchored to the new text, or marked stale if their text changed.</li>
+    <li>Content under review is locked. Editing approved content returns it to draft for re-approval.</li>
+  </ul>
+  <h3>Approval</h3>
+  <div class="flowline">
+    <div class="step"><b>Draft</b><span>Creator audits and fixes</span></div>
+    <div class="step"><b>Under review</b><span>Submit requires an audit of the latest version</span></div>
+    <div class="step"><b>Changes requested</b><span>Reviewer must explain</span></div>
+    <div class="step"><b>Revised</b><span>Re-audited resubmission</span></div>
+    <div class="step"><b>Approved</b><span>Justification needed if high or critical findings are open</span></div>
+  </div>
+  <p>Each decision stores the actor role, note, version and number of open findings at that moment. All actions go to an append-only audit log, visible per submission and workspace-wide.</p>
+
+  <div class="flow">
+  <h2><span class="n">12</span>Original plan vs actual implementation</h2>
+  <table>
+    <tr><th style="width:38mm">Area</th><th style="width:52mm">Round 1 plan</th><th>Round 2 build and reason</th></tr>
+    <tr><td>Authentication</td><td>Supabase Auth with organisation roles</td><td>Per-workspace token plus a labelled demo role switch. Round 2 requires judges to use the core flow without a login. Real accounts move to Round 3.</td></tr>
+    <tr><td>Retrieval</td><td>pgvector embeddings</td><td>BM25 lexical retrieval: deterministic and key-free, behind a swappable interface.</td></tr>
+    <tr><td>AI analysis</td><td>Core step in the pipeline</td><td>Optional and strictly validated. Deterministic and retrieval checks are the backbone, so the product works without credentials and the model is never the source of truth.</td></tr>
+    <tr><td>Storage</td><td>Private object storage for uploads</td><td>Parsed in memory; only extracted text stored. No public file URLs.</td></tr>
+    <tr><td>Deployment</td><td>Vercel + Render</td><td>Single service (API serves the UI) on Render with PostgreSQL. Split hosting still supported.</td></tr>
+    <tr><td>Visual Inspector</td><td>Basic logo, colour and contrast checks</td><td>Colour and contrast implemented. Logo checks moved to Round 3 Improvement 1.</td></tr>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">13</span>Features completed</h2>
+  <table>
+    <tr><th style="width:62mm">Feature</th><th style="width:20mm">Status</th><th>Verified by</th></tr>
+    <tr><td>No-login demo workspace with synthetic brand</td><td><span class="tag t-ok">Complete</span></td><td>E2E steps 1–2</td></tr>
+    <tr><td>Document ingestion with page and section metadata</td><td><span class="tag t-ok">Complete</span></td><td>PDF/DOCX tests, E2E step 11</td></tr>
+    <tr><td>Review, approve and version documents</td><td><span class="tag t-ok">Complete</span></td><td>Versioning tests, E2E step 12</td></tr>
+    <tr><td>Approved facts with supersession</td><td><span class="tag t-ok">Complete</span></td><td>Supersede test</td></tr>
+    <tr><td>Six rule types with channel scope</td><td><span class="tag t-ok">Complete</span></td><td>Terminology and channel tests</td></tr>
+    <tr><td>Claim verification (4 outcomes)</td><td><span class="tag t-ok">Complete</span></td><td>Engine tests, evaluation set</td></tr>
+    <tr><td>Evidence validation and citation lookup</td><td><span class="tag t-ok">Complete</span></td><td>Citation and invalid-ID tests</td></tr>
+    <tr><td>Prompt-injection detection (content and documents)</td><td><span class="tag t-ok">Complete</span></td><td>Injection tests</td></tr>
+    <tr><td>Accept / edit / reject, versions, diff</td><td><span class="tag t-ok">Complete</span></td><td>Workflow tests, E2E steps 6–7</td></tr>
+    <tr><td>Five-state review workflow and audit log</td><td><span class="tag t-ok">Complete</span></td><td>Review-loop test, E2E steps 8–10, 15</td></tr>
+    <tr><td>Brand Drift Intelligence</td><td><span class="tag t-ok">Complete</span></td><td>Analytics test, E2E step 13</td></tr>
+    <tr><td>Palette and contrast inspection</td><td><span class="tag t-ok">Complete</span></td><td>Visual test, E2E step 14</td></tr>
+    <tr><td>PostgreSQL support</td><td><span class="tag t-ok">Complete</span></td><td>Full suite on PostgreSQL 16</td></tr>
+  </table>
+
+  <div class="flow">
+  <h2><span class="n">14</span>Partially completed or omitted</h2>
+  <table>
+    <tr><th style="width:62mm">Feature</th><th style="width:20mm">Status</th><th>Detail</th></tr>
+    <tr><td>AI contextual analysis</td><td><span class="tag t-part">Partial</span></td><td>Implemented and validated with a mock provider. Not exercised against a live model.</td></tr>
+    <tr><td>Tone analysis</td><td><span class="tag t-part">Partial</span></td><td>Deterministic checks only, unless AI is configured.</td></tr>
+    <tr><td>Roles and permissions</td><td><span class="tag t-part">Partial</span></td><td>Enforced server-side but driven by a demo switch. No user accounts.</td></tr>
+    <tr><td>Rule extraction from documents</td><td><span class="tag t-part">Partial</span></td><td>Pattern-based proposals that require admin approval.</td></tr>
+    <tr><td>Public deployment</td><td><span class="tag t-part">Pending</span></td><td>Configuration ready; needs the team’s hosting account.</td></tr>
+    <tr><td>Logo matching, typography, layout</td><td><span class="tag t-no">Not built</span></td><td>Round 3 Improvement 1.</td></tr>
+    <tr><td>Impact analysis and historical re-audit</td><td><span class="tag t-no">Not built</span></td><td>Round 3 Improvement 2. Fact and document versioning is already in place.</td></tr>
+    <tr><td>Assignment, escalation, channel policy packs</td><td><span class="tag t-no">Not built</span></td><td>Round 3 Improvement 3.</td></tr>
+    <tr><td>Document or image content submissions</td><td><span class="tag t-no">Not built</span></td><td>Content is pasted text in Round 2.</td></tr>
+    <tr><td>Semantic (embedding) retrieval</td><td><span class="tag t-no">Not built</span></td><td>BM25 only.</td></tr>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">15</span>Testing methodology and results</h2>
+  <p>All figures come from runs on 7 November 2026 against the submitted build.</p>
+  <div class="kpis">
+    <div><b>44 / 44</b><span>backend tests, on SQLite and on PostgreSQL 16</span></div>
+    <div><b>16 / 16</b><span>end-to-end browser steps in a fresh context</span></div>
+    <div><b>6 / 6</b><span>frontend unit tests; type check and build clean</span></div>
+    <div><b>26 / 26</b><span>labelled issues found, 0 false positives, 8/8 clean items</span></div>
+  </div>
+  <h3>Methodology</h3>
+  <ul>
+    <li><b>Backend tests (pytest)</b> cover all 18 judge test cases from the brief: detection, non-detection, evidence validity, invalid IDs, corrections and versions, the review loop, injection, missing credentials, error messages and upload formats. They also cover isolation, roles, versioning, visual checks and analytics.</li>
+    <li><b>End-to-end (Playwright):</b> the complete judge journey from the landing page through approval, document upload, analytics, visual inspection, history and the mobile layout.</li>
+    <li><b>Evaluation set:</b> 20 synthetic items (26 labelled issues, 8 compliant). A finding counts only if both the passage and the evidence status match. <i>The team wrote this set and the engine, so it is a regression benchmark, not a real-world accuracy figure.</i></li>
+    <li><b>Adversarial probe:</b> new inputs written to break the engine.</li>
+  </ul>
+  <h3>Problems found by testing and what we did</h3>
+  <table>
+    <tr><th style="width:62mm">Problem</th><th>Outcome</th></tr>
+    <tr><td>“#1 planner” wrongly marked verified (the digit 1 matched inside unrelated facts)</td><td>Fixed: superlative support needs the same phrase plus topic overlap. Regression test added.</td></tr>
+    <tr><td>“guaranteed” not flagged; relative claims misread as specs; “twelve hours”/“10h” not parsed; duplicate flags on an all-caps brand name</td><td>All fixed, with regression tests.</td></tr>
+    <tr><td>Overview, Settings and Voice screens blank on direct load (fetch-hook bug)</td><td>Fixed after the E2E caught it. Error boundary added.</td></tr>
+    <tr><td>Uploading “v4” created a separate document instead of a version</td><td>Fixed with an explicit “new version of” control and a test.</td></tr>
+    <tr><td>“by a third” (fractions in words) not detected</td><td>Open; see limitations.</td></tr>
+  </table>
+  <div class="note">Not run: building the Docker image (no Docker daemon was available while building; its steps were verified individually), and testing the public URL (not yet deployed).</div>
+
+</section>
+<section>
+  <div>
+  <h2><span class="n">16</span>Known limitations</h2>
+  <ul>
+    <li>The demo role switch is not authentication. Production needs real accounts.</li>
+    <li>Lexical retrieval can miss paraphrased claims that share no keyword with an approved fact. Fractions written as words are not parsed.</li>
+    <li>Claim verification relies on facts entered with structured values and keywords. Unstructured facts only support qualitative checks.</li>
+    <li>AI analysis has not been tested against a live model.</li>
+    <li>The Visual Inspector analyses colour only. It has no OCR or logo recognition, and its contrast flag is heuristic.</li>
+    <li>Synthetic, team-authored data only. No user research has been carried out yet.</li>
+    <li>Free hosting tiers sleep when idle, so the first request after a sleep can be slow.</li>
+    <li>PyMuPDF is AGPL-licensed. This is acceptable for an open-source deployment; it would need replacing for closed-source use.</li>
+  </ul>
+  </div>
+  <div class="flow">
+  <h2><span class="n">17</span>Team contributions</h2>
+  <table>
+    <tr><th style="width:42mm">Member</th><th style="width:50mm">Planned role (Round 1)</th><th>Area of the build</th></tr>
+    <tr><td>Sarthak Agrawal (Lead)</td><td>Integration, architecture, final demo</td><td>Product scope, architecture decisions, integration and demo flow</td></tr>
+    <tr><td>Rudresh Kumar</td><td>Frontend / UI</td><td>React application, proof desk, findings and reviewer interfaces</td></tr>
+    <tr><td>Arpit Singh</td><td>AI / retrieval / evaluation</td><td>Rule engine, claim verification, retrieval, evaluation set</td></tr>
+    <tr><td>Pranjal Gautam</td><td>Backend / database</td><td>FastAPI, data model, workflow, audit log, deployment</td></tr>
+  </table>
+  <div class="note warn"><b>AI assistance disclosure.</b> A substantial share of the code, tests and documentation was produced with an AI coding assistant (Anthropic Claude) under the team’s direction. The areas above map the build to the planned roles. Each member’s own contribution statement is provided separately in the submission, as the rules require. No pre-existing code or templates were used.</div>
+
+  </div>
+</section>
+<section>
+  <div>
+  <h2><span class="n">18</span>Three Round 3 improvements</h2>
+  <p>Each builds on Round 2 code without an architectural rewrite. Planned build order: 2 → 3 → 1.</p>
+  <table>
+    <tr><th style="width:40mm">Improvement</th><th style="width:52mm">Builds on (Round 2)</th><th>New capability and acceptance tests</th></tr>
+    <tr><td>1. Advanced Visual Brand Identity Inspector</td><td>Palette ΔE matching, WCAG checker, palette evidence</td><td>Approved logo library; logo detection (pHash + ORB) for found, missing, wrong variant and distortion; OCR text-region contrast; layout and safe-zone rules; bounding-box overlays in the review workflow. <i>Tests:</i> correct logo passes; recoloured or stretched logo is flagged; low-contrast text block fails AA. Precision and recall are measured on 30+ labelled creatives.</td></tr>
+    <tr><td>2. Guideline Versioning and Impact Analysis</td><td>Immutable document versions, supersession, comparison, outdated-claim detection</td><td>Change impact reports listing affected content; historical re-audit with before/after deltas; rule-level diffs; conflicting-fact detection; effective-dated activation; source authority. <i>Tests:</i> superseding the battery spec lists the previously approved page; unrelated content is not listed; conflicting facts are reported.</td></tr>
+    <tr><td>3. Multi-Channel Brand Governance</td><td>Channel field, channel-scoped rules, channel analytics</td><td>Channel policy packs (length, required and banned elements); slide/page-level audits of PPTX, DOCX and PDF; review assignment and escalation with real accounts; finding-level threads; cross-channel drift. <i>Tests:</i> Instagram length rule applies only to Instagram; deck finding on the right slide; critical findings require a second approver.</td></tr>
+  </table>
+  <p>The full specification (database, API and UI changes, test cases and completion criteria) is in <span class="mono">ROUND3_ROADMAP.md</span> in the repository.</p>
+  </div>
+</section>
+
+</body>
+</html>
