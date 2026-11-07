@@ -59,6 +59,7 @@ def test_full_review_loop(ws):  # TC12, TC13, TC14
     # locked while under review
     f = _find(d, "10 hours")
     assert ws.post(f"/submissions/{sid}/findings/{f['id']}/accept", json={}).status_code == 409
+    assert ws.post(f"/submissions/{sid}/findings/{f['id']}/reject", json={"reason": "x"}).status_code == 409
     # request changes requires a note
     assert ws.post(f"/submissions/{sid}/transition", role="reviewer", json={"action": "request_changes"}).status_code == 422
     d = ws.post(f"/submissions/{sid}/transition", role="reviewer", json={"action": "request_changes", "note": "Battery spec is outdated."}).json()

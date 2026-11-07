@@ -26,7 +26,7 @@ export function FindingCard({ f, role, active, editable, onFocus, onEvidence, on
   const meta = evidenceMeta[f.evidence_status];
   const closed = f.status !== "open";
   const canAct = !closed && editable && (role === "creator" || role === "admin");
-  const canDismiss = !closed && (role === "creator" || role === "admin" || role === "reviewer");
+  const canDismiss = !closed && (role === "reviewer" || (editable && (role === "creator" || role === "admin")));
 
   async function run(fn: () => Promise<void>) {
     setBusy(true);

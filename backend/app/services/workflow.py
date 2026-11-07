@@ -117,6 +117,8 @@ def reject_correction(db: Session, sub: Submission, finding: Finding, role: str,
         raise DomainError("Not permitted.", 403)
     if finding.status != "open":
         raise DomainError(f"This finding is already {finding.status}.", 409)
+    if role != "reviewer" and sub.status in ("under_review", "revised"):
+        raise DomainError("Content is with a reviewer. Wait for a decision before changing findings.", 409)
     finding.status = "rejected"
     db.add(Correction(finding_id=finding.id, submission_id=sub.id, action="rejected", original=finding.passage,
                       applied_text=None, reason=reason[:1000], from_version=latest(sub).version_no, to_version=None,
