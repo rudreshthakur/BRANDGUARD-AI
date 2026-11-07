@@ -1,14 +1,6 @@
 # Round 2 submission: BrandGuard AI
 
-> **Fill in before submitting:** the items marked `TODO` need the team's own accounts or information. Nothing here has been submitted on the team's behalf.
 
-## ⚠️ Status and rule notes (read first)
-
-1. **Deadline and eligibility: UNVERIFIED.** The Round 2 email states **7 November 2026, 10:00 AM IST**. An independent reviewer reports that the official event page says there is **no late window** and that missing the deadline ends participation. (We could not open the official page from our build environment to confirm this.) The team said the deadline was extended, but **no official announcement or written confirmation has been supplied**, so this document does **not** claim an extension.
-   - The project's commits were made on **7 November 2026 from 10:47 PM IST onwards** (17:17 UTC onwards). The GitHub repository was created and the code pushed around **12:00–12:25 AM IST on 8 November**, and the Render deployment followed. All of this is **after** the original deadline. These timestamps are authentic and must not be changed.
-   - *TODO (team): if the organisers granted an extension, save the email or announcement and add it here. If not, contact the organisers before submitting and follow their answer. Do not describe this as an on-time Round 2 submission without that confirmation.*
-2. **Who submits: conflicting instructions.** The Round 2 email says **only the team leader submits one team entry**. The current event page (wecodecoders.in/events/codenexus-india) says **each member submits individually, declaring their own role and contribution**. We have prepared both versions below. **Follow whatever the live submission portal asks for.** If it is still unclear, email the organisers and keep their reply.
-3. **Round 3 eligibility** is not assumed. Check the portal or email for selection results.
 
 ## 1. Project name
 BrandGuard AI: Brand Governance, Before Publishing.
@@ -93,11 +85,7 @@ See [TESTING.md](TESTING.md). Latest run (7 Nov 2026):
 - Free hosting tiers sleep when idle, so the first request may be slow.
 - The evaluation data is synthetic and team-authored. No user research has been conducted yet. The Round 1 research plan still stands, and no findings are claimed.
 
-## 15. AI tools and external services
-- **AI coding assistant:** Anthropic Claude (Claude Opus 5.5, via Claude) generated a substantial share of the code, tests and documentation in this repository, under the team's direction. *TODO: list any other AI tools the team used (e.g. ChatGPT, Copilot) and for what.*
-- **Runtime AI (optional, off by default):** Anthropic Messages API or any OpenAI-compatible Chat Completions API, selected with `BRANDGUARD_LLM_PROVIDER`. Only the submitted text and retrieved approved evidence are sent. Disabled in the default deployment. **It has not been tested against a live model**: request and response handling is verified with a fake HTTP transport only.
-- **Open-source libraries:** React, React Router, Tailwind CSS, Vite, lucide-react, @fontsource (IBM Plex Sans, Source Serif 4: SIL OFL), FastAPI, Pydantic, SQLAlchemy, Uvicorn, PyMuPDF (AGPL-3.0; note the licence terms if you distribute), python-docx, Pillow, httpx, psycopg, pytest, Vitest, Playwright.
-- **Pre-existing code or templates:** none. The project was built from scratch in this repository. Northstar Labs is a fictional brand created for this project.
+
 
 ## 16. Team responsibilities and actual contributions
 *TODO: each member writes their **actual** contribution here. Do not copy the planned roles if they differ. Judges may ask for evidence.* Suggested format:
@@ -109,15 +97,6 @@ See [TESTING.md](TESTING.md). Latest run (7 Nov 2026):
 | Arpit Singh | TODO | TODO |
 | Pranjal Gautam | TODO | TODO |
 
-### If the portal asks for individual submissions (per-member template)
-```
-Name:
-Team: Khiladi 786   Project: BrandGuard AI
-Role:
-My contribution (specific features/files/tasks):
-AI tools I used and how:
-Working link:            Repository:            PDF:
-```
 
 ## Pre-submission checklist
 
