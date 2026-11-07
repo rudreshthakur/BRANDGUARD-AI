@@ -134,19 +134,19 @@ function Documents() {
   const files = useApi<{ files: { name: string; kind: string; description: string }[] }>("/api/samples/files");
   const [sel, setSel] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [meta, setMeta] = useState({ title: "", authority: "Brand team", effective_date: "" });
+  const [meta, setMeta] = useState({ title: "", authority: "Brand team", effective_date: "", replaces: "" });
   const [busy, setBusy] = useState(false);
 
   async function upload(e: React.FormEvent) {
     e.preventDefault();
     if (!file) return;
     const fd = new FormData();
-    fd.append("file", file); fd.append("title", meta.title); fd.append("authority", meta.authority); fd.append("effective_date", meta.effective_date);
+    fd.append("file", file); fd.append("title", meta.title); fd.append("authority", meta.authority); fd.append("effective_date", meta.effective_date); fd.append("replaces_source_id", meta.replaces);
     setBusy(true);
     try {
       const s = await api<Source>("/knowledge/sources", { method: "POST", body: fd });
       toast("Uploaded. Review the extracted text before approving");
-      setFile(null); setMeta({ title: "", authority: "Brand team", effective_date: "" });
+      setFile(null); setMeta({ title: "", authority: "Brand team", effective_date: "", replaces: "" });
       (document.getElementById("doc-file") as HTMLInputElement | null)?.form?.reset();
       await reload(); setSel(s.id);
     } catch (e2) { toast((e2 as Error).message, "error"); } finally { setBusy(false); }
@@ -165,6 +165,14 @@ function Documents() {
               <input className="field" placeholder="Title (optional)" value={meta.title} onChange={(e) => setMeta({ ...meta, title: e.target.value })} aria-label="Title" />
               <input className="field" placeholder="Authority" value={meta.authority} onChange={(e) => setMeta({ ...meta, authority: e.target.value })} aria-label="Authority" />
               <input className="field" type="date" value={meta.effective_date} onChange={(e) => setMeta({ ...meta, effective_date: e.target.value })} aria-label="Effective date" />
+            </div>
+            <div>
+              <label className="label" htmlFor="replaces">This document is</label>
+              <select id="replaces" className="field" value={meta.replaces} onChange={(e) => setMeta({ ...meta, replaces: e.target.value })}>
+                <option value="">A new document</option>
+                {(data?.sources ?? []).filter((s) => s.status === "approved").map((s) => <option key={s.id} value={s.id}>A new version of {s.title}</option>)}
+              </select>
+              {meta.replaces && <p className="mt-1 text-xs text-graphite-mute">Once approved, it supersedes the current version, which stays available for comparison.</p>}
             </div>
             <button className="btn-primary" disabled={!file || busy}>{busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Upload className="h-4 w-4" aria-hidden />} Upload and extract</button>
           </form>

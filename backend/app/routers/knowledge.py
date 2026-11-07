@@ -50,13 +50,16 @@ def get_source(source_id: str, ws: Workspace = Depends(get_workspace), db: Sessi
 
 @router.post("/sources", status_code=201)
 async def upload_source(file: UploadFile = File(...), title: str = Form(default=""), authority: str = Form(default="Brand team"),
-                        effective_date: str = Form(default=""), ws: Workspace = Depends(get_workspace),
+                        effective_date: str = Form(default=""), replaces_source_id: str = Form(default=""),
+                        ws: Workspace = Depends(get_workspace),
                         role: str = Depends(require_admin), db: Session = Depends(get_db)):
     data = await file.read()
     eff = effective_date.strip() or None
     if eff and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", eff):
         raise HTTPException(422, "Effective date must be YYYY-MM-DD.")
-    src = ingest_document(db, ws.id, file.filename or "upload.txt", data, title or None, role, authority or "Brand team", eff)
+    replaces = _get(db, Source, ws, replaces_source_id) if replaces_source_id else None
+    src = ingest_document(db, ws.id, file.filename or "upload.txt", data, title or None, role, authority or "Brand team", eff,
+                          replaces=replaces)
     out = source_out(src, with_chunks=True)
     out["proposed_rules"] = propose_rules(src.chunks)
     return out

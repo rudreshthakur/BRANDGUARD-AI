@@ -7,11 +7,11 @@ export function useApi<T>(path: string | null) {
   const { session } = useSession();
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(!!path);
+  const [loading, setLoading] = useState<boolean>(path !== null);
   const seq = useRef(0);
 
   const reload = useCallback(async () => {
-    if (!path) return;
+    if (path === null) return;
     const id = ++seq.current;
     setLoading(true);
     try {

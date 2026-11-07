@@ -103,6 +103,11 @@ def _fact_tokens(f: Fact) -> tuple[set[str], set[str]]:
     return kw, subj
 
 
+def _pretty(f: Fact) -> str:
+    metric = (f.metric or "value").replace("_", " ")
+    return f"{metric} ({f.subject})" if f.subject else metric
+
+
 def _fmt(v: float) -> str:
     return f"{v:,.0f}" if float(v).is_integer() else f"{v:g}"
 
@@ -171,7 +176,7 @@ def verify_claims(text: str, ctx: AuditContext) -> tuple[list[FindingDraft], lis
                     ev_old["status"] = "superseded"
                     evid.append(ev_old)
                 findings.append(FindingDraft(
-                    rule_id=f"OUTDATED-{cur.metric or cur.id}", rule_label=f"Outdated specification: {cur.subject} {cur.metric or ''}".strip(),
+                    rule_id=f"OUTDATED-{cur.metric or cur.id}", rule_label=f"Outdated spec: {_pretty(cur)}",
                     category="fact", severity="high", title=f"Outdated specification “{claim.text}”",
                     passage=claim.text, start=claim.start, end=claim.end,
                     explanation=(f"“{claim.text}” matches a superseded specification"
@@ -182,7 +187,7 @@ def verify_claims(text: str, ctx: AuditContext) -> tuple[list[FindingDraft], lis
                     suggestion_reason="Update only the number to the current approved specification.", origin="retrieval"))
             else:
                 findings.append(FindingDraft(
-                    rule_id=f"CONFLICT-{cur.metric or cur.id}", rule_label=f"Fact conflict: {cur.subject} {cur.metric or ''}".strip(),
+                    rule_id=f"CONFLICT-{cur.metric or cur.id}", rule_label=f"Fact conflict: {_pretty(cur)}",
                     category="fact", severity="high", title=f"Conflicts with approved fact: “{claim.text}”",
                     passage=claim.text, start=claim.start, end=claim.end,
                     explanation=f"“{claim.text}” contradicts the approved fact: {cur.statement}",
@@ -218,7 +223,7 @@ def _unsupported_numeric(text, sent: Sentence, claim: NumericClaim, ctx, policy_
     passage = text[start:end]
     status = "ambiguous" if ambiguous else "unsupported"
     return FindingDraft(
-        rule_id=f"UNSUPPORTED-{claim.unit}", rule_label=f"Unsupported quantified claim ({claim.unit})",
+        rule_id=f"UNSUPPORTED-{claim.unit}", rule_label=f"Unverified figure ({claim.unit})",
         category="claim", severity="high",
         title=f"Unsupported numerical claim “{claim.text}”",
         passage=passage, start=start, end=end,
@@ -266,7 +271,7 @@ def _qualitative_claims(text: str, sentences: list[Sentence], ctx: AuditContext,
                                      "evidence": [ev] if ev else []})
                     continue
                 out.append(FindingDraft(
-                    rule_id=f"ABSOLUTE-{core}", rule_label=f"Absolute/superlative claim ({core})", category="claim",
+                    rule_id=f"ABSOLUTE-{core}", rule_label=f"Unverified superlative ({core})", category="claim",
                     severity=sev, title=f"Unsubstantiated absolute claim “{passage}”", passage=passage,
                     start=m.start(), end=end,
                     explanation=(f"{UNABLE_TO_VERIFY} Superlative and absolute statements need approved substantiation "

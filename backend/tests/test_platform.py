@@ -173,3 +173,21 @@ def test_brand_drift_uses_real_data_and_can_exclude_samples(ws):
 def test_security_headers_present(client):
     r = client.get("/api/health")
     assert r.headers["X-Content-Type-Options"] == "nosniff"
+
+
+def test_upload_as_new_version_supersedes_and_changes_rules(ws):
+    from app.seed.northstar import GUIDELINES_V4_DRAFT
+    v3 = next(s for s in ws.get("/knowledge/sources").json()["sources"] if s["title"] == "Northstar Labs Brand Guidelines v3")
+    r = ws.post("/knowledge/sources", role="admin", data={"title": "Northstar Labs Brand Guidelines v4", "replaces_source_id": v3["id"]},
+                files={"file": ("v4.txt", GUIDELINES_V4_DRAFT.encode(), "text/plain")})
+    v4 = r.json()
+    assert v4["version"] == 2 and v4["lineage_key"] == v3["lineage_key"]
+    idx = [i for i, p in enumerate(v4["proposed_rules"]) if p["term"] == "hustle"]
+    ws.post(f"/knowledge/sources/{v4['id']}/approve", role="admin", json={"accept_proposals": idx})
+    srcs = {s["id"]: s for s in ws.get("/knowledge/sources").json()["sources"]}
+    assert srcs[v3["id"]]["status"] == "superseded" and srcs[v4["id"]]["status"] == "approved"
+    cmp = ws.get(f"/knowledge/sources/{v4['id']}/compare/{v3['id']}").json()
+    assert cmp["old"]["version"] == 1 and cmp["new"]["version"] == 2 and cmp["changes"]
+    d = ws.audit_text("Less hustle, more focus.")
+    f = next(x for x in d["findings"] if x["passage"] == "hustle")
+    assert f["suggestion"] == "focused work" and f["evidence"][0]["document"] == "Northstar Labs Brand Guidelines v4"

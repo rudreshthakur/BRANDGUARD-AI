@@ -16,6 +16,21 @@ import Settings from "./pages/Settings";
 import SubmissionPage from "./pages/Submission";
 import Visual from "./pages/Visual";
 
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  render() {
+    if (!this.state.error) return this.props.children;
+    return (
+      <div className="mx-auto max-w-lg px-6 py-24 text-center">
+        <h1 className="text-xl font-semibold">This screen hit an unexpected error</h1>
+        <p className="mt-2 text-graphite-mute">Your content and decisions are saved on the server. Reload to continue.</p>
+        <button className="btn-primary mt-6" onClick={() => window.location.reload()}>Reload</button>
+      </div>
+    );
+  }
+}
+
 function RequireWorkspace({ children }: { children: React.ReactNode }) {
   const { session } = useSession();
   return session ? <>{children}</> : <Navigate to="/" replace />;
@@ -23,6 +38,7 @@ function RequireWorkspace({ children }: { children: React.ReactNode }) {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <ErrorBoundary>
     <SessionProvider>
       <ToastProvider>
         <BrowserRouter>
@@ -45,5 +61,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </BrowserRouter>
       </ToastProvider>
     </SessionProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 );

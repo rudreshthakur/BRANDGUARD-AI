@@ -32,7 +32,7 @@ function Bars({ rows, fill = "#2949C6", unit = "finding" }: { rows: { label: str
   return (
     <ul className="space-y-2.5">
       {rows.map((r) => (
-        <li key={r.label} className="grid grid-cols-[minmax(0,11rem)_1fr_2.5rem] items-center gap-3 text-sm" title={`${r.label}: ${r.value} ${unit}${r.value === 1 ? "" : "s"}${r.hint ? ` — ${r.hint}` : ""}`}>
+        <li key={r.label} className="grid grid-cols-[minmax(0,14rem)_1fr_2.5rem] items-center gap-3 text-sm" title={`${r.label}: ${r.value} ${unit}${r.value === 1 ? "" : "s"}${r.hint ? ` — ${r.hint}` : ""}`}>
           <span className="truncate text-graphite">{r.label}</span>
           <span className="h-3 rounded-r-[4px] bg-paper-edge/60" aria-hidden>
             <span className="block h-3 rounded-r-[4px]" style={{ width: `${(r.value / max) * 100}%`, background: r.color ?? fill, minWidth: r.value ? 4 : 0 }} />

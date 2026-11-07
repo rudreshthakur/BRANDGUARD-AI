@@ -42,8 +42,11 @@ def drift_report(db: Session, workspace_id: str, include_samples: bool = True) -
         r["submissions"] = len(r["submissions"])
         r["channels"] = sorted(r["channels"])
 
-    term_counter = Counter(f.passage.strip().lower() for f in uf if f.category in ("terminology", "brand_name", "tone")
-                           and f.origin == "rule")
+    term_src = [f.passage.strip() for f in uf if f.category in ("terminology", "brand_name", "tone") and f.origin == "rule"]
+    display = {}
+    for t in term_src:
+        display.setdefault(t.lower(), t)
+    term_counter = Counter(display[t.lower()] for t in term_src)
     claim_counter = Counter(normalise_passage(f.passage) for f in uf if f.evidence_status in ("unsupported", "ambiguous"))
 
     corrections = [c for c in db.scalars(select(Correction)) if c.submission_id in subs]

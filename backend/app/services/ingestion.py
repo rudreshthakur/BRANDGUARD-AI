@@ -168,13 +168,14 @@ def lineage_key(title: str) -> str:
 
 
 def ingest_document(db: Session, workspace_id: str, filename: str, data: bytes, title: str | None, role: str,
-                    authority: str = "Brand team", effective_date: str | None = None, synthetic: bool = False) -> Source:
+                    authority: str = "Brand team", effective_date: str | None = None, synthetic: bool = False,
+                    replaces: Source | None = None) -> Source:
     ext = detect_type(filename, data)
     blocks, pages = extract_blocks(ext, data)
     if not blocks:
         raise DomainError("No extractable text was found (scanned images need OCR, which is not enabled).", 422)
     title = (title or filename).strip()[:200]
-    key = lineage_key(title)
+    key = replaces.lineage_key if replaces else lineage_key(title)
     prev = db.scalar(select(func.max(Source.version)).where(Source.workspace_id == workspace_id, Source.lineage_key == key)) or 0
     full_text = "\n".join(b.text for b in blocks)
     flags = [{"excerpt": frag[:120], "offset": s} for s, _, frag in scan(full_text)]
