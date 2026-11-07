@@ -15,6 +15,7 @@ from .retrieval import Retriever
 from .rules import AuditContext, run_rules
 from .security import injection_findings
 
+MAX_FINDINGS = 200
 NEEDS_EVIDENCE = {"rule_violation", "verified_conflict", "outdated"}
 
 
@@ -79,9 +80,13 @@ def run_audit(db: Session, ws: Workspace, sub: Submission, actor_role: str) -> A
     claim_findings, verified = verify_claims(text, ctx)
     drafts += claim_findings
     ai_findings, ai_mode, ai_msg = llm.analyse(text, sub.channel, ctx.retriever, ctx.validator)
+    if len(drafts) > MAX_FINDINGS:
+        ai_msg += f" Only the {MAX_FINDINGS} most severe findings are kept for very long or repetitive content."
     drafts += ai_findings
     drafts = finalise_evidence(_dedupe(drafts), ctx.validator, text)
     drafts.sort(key=lambda d: (SEVERITY_RANK[d.severity], d.start))
+    truncated = max(0, len(drafts) - MAX_FINDINGS)
+    drafts = drafts[:MAX_FINDINGS]
 
     # older open findings on this submission no longer reflect the latest audit
     db.execute(update(Finding).where(Finding.submission_id == sub.id, Finding.status == "open").values(status="stale"))
@@ -93,7 +98,8 @@ def run_audit(db: Session, ws: Workspace, sub: Submission, actor_role: str) -> A
                    knowledge_snapshot=ctx.retriever.snapshot(), verified_claims=verified,
                    stats={"total": len(drafts), "by_severity": sev,
                           "deterministic": sum(1 for d in drafts if d.origin in ("rule", "retrieval", "security")),
-                          "ai": sum(1 for d in drafts if d.origin == "ai"), "verified_claims": len(verified)})
+                          "ai": sum(1 for d in drafts if d.origin == "ai"), "verified_claims": len(verified),
+                          "truncated": truncated})
     db.add(run)
     db.flush()
     for d in drafts:

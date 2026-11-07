@@ -73,7 +73,7 @@ Details are in [ROUND3_ROADMAP.md](ROUND3_ROADMAP.md).
 
 ## 13. Actual testing outcomes
 See [TESTING.md](TESTING.md). Latest run (7 Nov 2026):
-- 44/44 backend tests (SQLite and PostgreSQL)
+- 46/46 backend tests (SQLite and PostgreSQL)
 - 6/6 frontend unit tests, clean type check, successful production build
 - 16/16 end-to-end browser steps
 - Team-authored synthetic evaluation set: 26/26 expected issues, 0 false positives (a regression benchmark, not independent accuracy)

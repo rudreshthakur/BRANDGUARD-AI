@@ -191,3 +191,21 @@ def test_upload_as_new_version_supersedes_and_changes_rules(ws):
     d = ws.audit_text("Less hustle, more focus.")
     f = next(x for x in d["findings"] if x["passage"] == "hustle")
     assert f["suggestion"] == "focused work" and f["evidence"][0]["document"] == "Northstar Labs Brand Guidelines v4"
+
+
+def test_admin_triggers_are_plain_phrases_not_regex(ws):
+    # a classic catastrophic-backtracking pattern is treated as literal text, so it can't hang the server
+    r = ws.post("/knowledge/terms", role="admin", json={"kind": "required_phrase", "term": "Offer ends Sunday.",
+                                                        "trigger": "(a+)+$|flash sale"})
+    assert r.status_code == 201
+    import time
+    t = time.time()
+    d = ws.audit_text("a" * 5000 + " Our flash sale starts now.")
+    assert time.time() - t < 5
+    assert any("Offer ends Sunday." in f["title"] for f in d["findings"])
+
+
+def test_findings_are_capped_for_pathological_input(ws):
+    d = ws.audit_text(" ".join(["Pulse gives 50% more focus and is the best tool!!!"] * 300)[:19999])
+    assert len(d["findings"]) <= 200
+    assert d["latest_audit"]["stats"]["truncated"] > 0

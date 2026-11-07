@@ -30,7 +30,7 @@ export interface AuditRun {
   id: string; version_no: number; ai_mode: string; ai_status: string;
   knowledge_snapshot: { approved_sources?: string[]; approved_facts?: number; indexed_chunks?: number };
   verified_claims: VerifiedClaim[];
-  stats: { total: number; by_severity: Record<Severity, number>; deterministic: number; ai: number; verified_claims: number };
+  stats: { total: number; by_severity: Record<Severity, number>; deterministic: number; ai: number; verified_claims: number; truncated?: number };
   created_at: string;
 }
 

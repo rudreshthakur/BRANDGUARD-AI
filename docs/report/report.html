@@ -257,7 +257,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <tr><td>Retrieval</td><td>BM25 (in-process)</td><td>Deterministic, needs no external keys, swappable for pgvector.</td></tr>
     <tr><td>AI (optional)</td><td>Anthropic or OpenAI-compatible API via httpx</td><td>Provider abstraction, temperature 0, strict JSON schema. Off by default.</td></tr>
     <tr><td>Visual</td><td>Pillow</td><td>Median-cut quantisation, CIE76 ΔE, WCAG 2.1 contrast.</td></tr>
-    <tr><td>Testing</td><td>pytest, Vitest, Playwright</td><td>44 backend tests, 6 frontend tests, 16-step E2E journey.</td></tr>
+    <tr><td>Testing</td><td>pytest, Vitest, Playwright</td><td>46 backend tests, 6 frontend tests, 16-step E2E journey.</td></tr>
     <tr><td>Deployment</td><td>Dockerfile, Render blueprint, Vercel config</td><td>Single-service or split hosting.</td></tr>
   </table>
   <h3>Security</h3>
@@ -373,7 +373,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
   <h2><span class="n">15</span>Testing methodology and results</h2>
   <p>All figures come from runs on 7 November 2026 against the submitted build.</p>
   <div class="kpis">
-    <div><b>44 / 44</b><span>backend tests, on SQLite and on PostgreSQL 16</span></div>
+    <div><b>46 / 46</b><span>backend tests, on SQLite and on PostgreSQL 16</span></div>
     <div><b>16 / 16</b><span>end-to-end browser steps in a fresh context</span></div>
     <div><b>6 / 6</b><span>frontend unit tests; type check and build clean</span></div>
     <div><b>26 / 26</b><span>labelled issues found, 0 false positives, 8/8 clean items</span></div>
@@ -392,6 +392,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <tr><td>“guaranteed” not flagged; relative claims misread as specs; “twelve hours”/“10h” not parsed; duplicate flags on an all-caps brand name</td><td>All fixed, with regression tests.</td></tr>
     <tr><td>Overview, Settings and Voice screens blank on direct load (fetch-hook bug)</td><td>Fixed after the E2E caught it. Error boundary added.</td></tr>
     <tr><td>Uploading “v4” created a separate document instead of a version</td><td>Fixed with an explicit “new version of” control and a test.</td></tr>
+    <tr><td>Admin-defined regex triggers could allow catastrophic backtracking; pathological input produced 900 findings</td><td>Fixed: triggers are plain phrases; findings capped at the 200 most severe with a notice.</td></tr>
     <tr><td>“by a third” (fractions in words) not detected</td><td>Open; see limitations.</td></tr>
   </table>
   <div class="note">Not run: building the Docker image (no Docker daemon was available while building; its steps were verified individually), and testing the public URL (not yet deployed).</div>

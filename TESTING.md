@@ -6,8 +6,8 @@ All results below come from actual runs on **7 November 2026 (UTC)** against com
 
 | Check | Command | Result |
 |---|---|---|
-| Backend unit + API tests (SQLite) | `cd backend && python -m pytest -q` | **44 passed, 0 failed** |
-| Backend tests on PostgreSQL 16 (clean venv from `requirements.txt`) | `DATABASE_URL=postgresql://… python -m pytest -q` | **44 passed, 0 failed** |
+| Backend unit + API tests (SQLite) | `cd backend && python -m pytest -q` | **46 passed, 0 failed** |
+| Backend tests on PostgreSQL 16 (clean venv from `requirements.txt`) | `DATABASE_URL=postgresql://… python -m pytest -q` | **46 passed, 0 failed** |
 | Frontend type check | `cd frontend && npm run typecheck` | **No errors** |
 | Frontend unit tests (Vitest) | `npm test` | **6 passed** |
 | Production frontend build | `npm run build` | **Succeeded** (JS bundle 282 kB, 84 kB gzip) |
@@ -83,6 +83,20 @@ After the benchmark passed, we wrote inputs the engine had not been tuned on. Fi
 | "Beacon's battery lasts twelve hours." / "10h" | Spelled-out numbers and "h" not parsed | **Fixed** |
 | "NORTHSTAR LABS is here." | Three overlapping findings | **Fixed**: low tone flags inside an existing rule violation are merged. |
 | "Pulse cuts scheduling time by a third." | Fractions in words not detected | **Open**: listed in known limitations. |
+
+## API break tests (final judge-style review)
+
+| Attempt | Result |
+|---|---|
+| HTML/script and SQL text in title and content, emoji and Unicode | Stored and shown as plain text (React escapes output); queries are parameterised; audit ran normally |
+| Accepting the same finding twice | Second attempt returns 409 "This finding is already accepted." |
+| Unknown finding, version or submission IDs | 404 with clear messages |
+| 11 MB upload | 413 "File exceeds the 10 MB limit." |
+| 20,000-character submission | Audited in ~0.2 s |
+| Pathological repetitive content (900 raw findings) | **Fixed:** findings are now capped at the 200 most severe, with a visible notice |
+| Admin trigger `(a+)+$` (catastrophic-backtracking regex) | **Fixed:** triggers are now plain phrases separated by `|`, never raw regex. Regression test added. |
+| Invalid workflow action, path traversal in API or static paths | 422 validation message; traversal returns only the app shell |
+| Rule whose source guideline was superseded | Citation now says "(superseded version; rule still active)" |
 
 ## Bugs found by testing during the build
 

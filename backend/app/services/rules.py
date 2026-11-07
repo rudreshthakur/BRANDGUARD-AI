@@ -8,7 +8,7 @@ from ..models import Term, Workspace
 from .evidence import EvidenceValidator
 from .findings import FindingDraft, match_case
 from .retrieval import Retriever
-from .text_utils import Sentence, find_phrase, sentence_for, split_sentences
+from .text_utils import Sentence, find_phrase, sentence_for, split_sentences, trigger_pattern
 
 CAPS_ALLOW = {"AES", "HIPAA", "GDPR", "API", "SSO", "USA", "UK", "EU", "CEO", "FAQ", "PDF", "iOS", "AI", "B2B", "SaaS",
               "WCAG", "ISO", "SOC", "USD", "INR"}
@@ -119,7 +119,7 @@ def _required_phrase(text, sentences: list[Sentence], term: Term, ctx):
         return []
     anchor: Sentence | None = None
     if term.trigger:
-        m = re.search(term.trigger, text, re.IGNORECASE)
+        m = trigger_pattern(term.trigger).search(text)
         if not m:
             return []
         anchor = sentence_for(sentences, m.start())
@@ -147,7 +147,7 @@ _PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(%|percent\b)", re.IGNORECASE)
 
 def _numeric_limit(text, sentences: list[Sentence], term: Term, ctx):
     res = []
-    trig = re.compile(term.trigger or term.term, re.IGNORECASE)
+    trig = trigger_pattern(term.trigger or term.term)
     for sent in sentences:
         if not trig.search(sent.text):
             continue

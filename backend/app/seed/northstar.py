@@ -232,7 +232,7 @@ def seed_northstar(db: Session, ws: Workspace, with_activity: bool = True) -> No
          explanation="Reads as hype rather than evidence.", page=2, section=sec["g_terms"])
     term(kind="required_phrase", term="#NorthstarLabs", channels=["instagram"], severity="medium", category="channel",
          explanation="Instagram captions must end with the brand hashtag #NorthstarLabs.", page=2, section=sec["g_channel"])
-    term(kind="required_phrase", term="Terms apply.", trigger=r"\bfree\s+trial\b", severity="high", category="compliance",
+    term(kind="required_phrase", term="Terms apply.", trigger="free trial", severity="high", category="compliance",
          explanation="Any mention of the free trial must include “Terms apply.”", page=2, section=sec["g_channel"])
     term(kind="forbidden_claim", term="clinically proven", severity="critical", category="compliance",
          explanation="Northstar products have not been clinically tested.", page=3, section=sec["g_claims"])
@@ -241,7 +241,7 @@ def seed_northstar(db: Session, ws: Workspace, with_activity: bool = True) -> No
          page=3, section=sec["g_claims"])
     term(kind="forbidden_claim", term="HIPAA certified", severity="critical", category="compliance",
          explanation="Northstar Labs holds no HIPAA certification.", page=3, section=sec["g_claims"])
-    term(kind="numeric_limit", term="Promotional discount", trigger=r"\b(off|discount|save)\b", limit_value=25,
+    term(kind="numeric_limit", term="Promotional discount", trigger="off|discount|save", limit_value=25,
          severity="high", category="compliance", explanation="Promotional discounts must not exceed 25% without written approval.",
          page=3, section=sec["g_claims"])
     log_event(db, ws.id, "admin", "workspace.seeded", None,

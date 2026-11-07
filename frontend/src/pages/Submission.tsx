@@ -279,6 +279,7 @@ export default function SubmissionPage() {
             <div className="rounded-md border border-paper-edge bg-white/60 px-4 py-3 text-xs leading-5 text-graphite-mute">
               <div><span className="font-medium text-graphite">Checked against:</span> {(run.knowledge_snapshot.approved_sources ?? []).join(", ") || "no approved documents"}; {run.knowledge_snapshot.approved_facts ?? 0} approved facts.</div>
               <div><span className="font-medium text-graphite">AI analysis:</span> {run.ai_status}</div>
+              {(run.stats.truncated ?? 0) > 0 && <div className="text-ev-outdated">{run.stats.truncated} lower-severity findings were not shown because this content produced more than 200. Fix the top issues and re-run the audit.</div>}
             </div>
           )}
         </section>

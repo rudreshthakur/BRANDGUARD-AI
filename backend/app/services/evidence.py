@@ -111,7 +111,10 @@ class EvidenceValidator:
         if evidence_id in self.terms:
             t = self.terms[evidence_id]
             src = self.retriever.sources.get(t.source_id) if t.source_id else None
-            return term_to_evidence(t, src.title if src else None, src.version if src else None)
+            ev = term_to_evidence(t, src.title if src else None, src.version if src else None)
+            if src is not None and src.status == "superseded":
+                ev["document"] += " (superseded version; rule still active)"
+            return ev
         return None
 
     def validate(self, items: list[dict], allowed_ids: set[str] | None = None,

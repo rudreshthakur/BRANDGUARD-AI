@@ -113,3 +113,12 @@ def sentence_for(sentences: list[Sentence], pos: int) -> Sentence | None:
 
 def normalise_passage(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip().lower())
+
+
+def trigger_pattern(trigger: str) -> re.Pattern[str]:
+    """Admin-defined triggers are plain phrases separated by '|' (never raw regex), so they can't cause
+    catastrophic backtracking. Each phrase gets the same boundary-aware matching as terms."""
+    phrases = [p.strip() for p in trigger.split("|") if p.strip()][:20]
+    if not phrases:
+        return re.compile(r"(?!x)x")
+    return re.compile("|".join(f"(?:{phrase_pattern(p).pattern})" for p in phrases), re.IGNORECASE)

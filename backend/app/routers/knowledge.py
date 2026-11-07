@@ -212,12 +212,9 @@ class TermIn(BaseModel):
     @field_validator("trigger")
     @classmethod
     def _trigger(cls, v):
-        if v:
-            try:
-                re.compile(v)
-            except re.error as exc:
-                raise ValueError(f"invalid trigger pattern: {exc}") from exc
-        return v or None
+        if v and (len(v) > 200 or not any(p.strip() for p in v.split("|"))):
+            raise ValueError("use plain words or phrases separated by |, e.g. off|discount|save")
+        return v.strip() if v else None
 
     @field_validator("channels")
     @classmethod
