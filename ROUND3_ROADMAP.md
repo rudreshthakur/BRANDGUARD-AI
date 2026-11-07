@@ -1,4 +1,4 @@
-# Round 3 roadmap: three committed improvements
+# Round 3 roadmap: three proposed improvements (not yet built)
 
 Each improvement builds on code that already exists in Round 2, so it does not need an architectural rewrite. Each also has a user-visible capability and measurable acceptance tests. None of these are claimed as complete in Round 2.
 

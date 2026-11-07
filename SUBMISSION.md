@@ -5,7 +5,7 @@
 ## ⚠️ Status and rule notes (read first)
 
 1. **Deadline and eligibility: UNVERIFIED.** The Round 2 email states **7 November 2026, 10:00 AM IST**. An independent reviewer reports that the official event page says there is **no late window** and that missing the deadline ends participation. (We could not open the official page from our build environment to confirm this.) The team said the deadline was extended, but **no official announcement or written confirmation has been supplied**, so this document does **not** claim an extension.
-   - Every commit in this repository was made on **7 November 2026 between 10:47 PM and 11:07 PM IST** (17:17–17:37 UTC), plus later release-fix commits. That is **after** the original deadline. These timestamps are authentic and must not be changed.
+   - The project's commits were made on **7 November 2026 from 10:47 PM IST onwards** (17:17 UTC onwards). The GitHub repository was created and the code pushed around **12:00–12:25 AM IST on 8 November**, and the Render deployment followed. All of this is **after** the original deadline. These timestamps are authentic and must not be changed.
    - *TODO (team): if the organisers granted an extension, save the email or announcement and add it here. If not, contact the organisers before submitting and follow their answer. Do not describe this as an on-time Round 2 submission without that confirmation.*
 2. **Who submits: conflicting instructions.** The Round 2 email says **only the team leader submits one team entry**. The current event page (wecodecoders.in/events/codenexus-india) says **each member submits individually, declaring their own role and contribution**. We have prepared both versions below. **Follow whatever the live submission portal asks for.** If it is still unclear, email the organisers and keep their reply.
 3. **Round 3 eligibility** is not assumed. Check the portal or email for selection results.
@@ -28,10 +28,14 @@ Khiladi 786
 *TODO: confirm emails and contact details from the portal, and correct the roles above to what each person actually did (see §16).*
 
 ## 4. Working application link
-`TODO: https://<your-service>.onrender.com`. **Not deployed yet.** Deployment needs the team's Render (or similar) account. Steps are in SETUP.md and take about 10 minutes with the included `render.yaml`. After deploying, test it in a private window using the checklist at the end of this file.
+**https://brandguard-ai-hndd.onrender.com**. Deployed on Render from `render.yaml`: web service `brandguard-ai` (Docker) and database `brandguard-db` (Render PostgreSQL 18). No login is required.
+
+- **Checked by the team (manual, 8 Nov 2026):** the site opens without login. A violating text produced 5 findings (4 high, 1 low) with guideline references, evidence, explanations and suggested fixes. A clean text produced 0 open findings.
+- **Not yet checked on the live site:** the full Creator → Reviewer → Admin workflow (accept a fix, submit, request changes or approve, admin document upload), the evidence drawer, the Brand Drift and Visual Inspector pages, and which database the live service is using. The same flows pass automated tests locally (see TESTING.md), but that is not proof they work in production. Run the live checklist at the end of this file.
+- **Free-tier limits:** the service sleeps after 15 minutes idle and takes about a minute to wake, so open it shortly before judging. The free database **expires 30 days after creation (around 7–8 December 2026)**; upgrade it before then if the demo must stay up.
 
 ## 5. Public repository link
-`TODO: https://github.com/<org>/brandguard-ai`. Push this repository to a **public** GitHub repo. Do not rewrite or backdate history. The existing commits are genuine and dated when they were made.
+**https://github.com/rudreshthakur/BRANDGUARD-AI** (public, branch `main`). History is genuine and has not been rewritten. Commits are authored as "Team Khiladi 786" (with a member's personal email) plus GitHub's initial commit by `rudreshthakur`.
 
 ## 6. Updated project PDF
 `docs/BrandGuard_AI_Round2_Project_Report.pdf` in this repository. Upload it, or link it from the repo.
@@ -67,15 +71,15 @@ The product follows the proposal's workflow, six modules and three differentiato
 - Uploaded files are parsed in memory with no object storage.
 - Not built: logo matching, document/image content submissions, assignment/escalation, real accounts.
 
-## 12. Three major Round 3 improvements
-Details are in [ROUND3_ROADMAP.md](ROUND3_ROADMAP.md).
+## 12. Three major Round 3 improvements (proposed, not built)
+These are **commitments for Round 3. None of them is implemented in the Round 2 build**, beyond the foundations named in ROUND3_ROADMAP.md. Details are in [ROUND3_ROADMAP.md](ROUND3_ROADMAP.md).
 1. **Advanced Visual Brand Identity Inspector:** logo matching and variant detection, region colour maps, OCR-based text contrast, layout and safe-zone checks, visual evidence overlays.
 2. **Guideline Versioning and Impact Analysis:** change impact reports, historical re-audit, rule-level diffs, conflicting-fact detection, effective dating, source authority.
 3. **Multi-Channel Brand Governance:** channel policy packs, slide/page-level audits for decks and documents, review assignment and escalation, team collaboration, cross-channel drift analytics.
 
 ## 13. Actual testing outcomes
 See [TESTING.md](TESTING.md). Latest run (7 Nov 2026):
-- 56/56 backend tests on SQLite and PostgreSQL 16, including 10 provider contract tests using a fake HTTP transport
+- 58/58 backend tests on SQLite and on PostgreSQL 16 (local), including 10 AI provider contract tests using a fake HTTP transport
 - 6/6 frontend unit tests, clean type check, successful production build
 - 16/16 end-to-end browser steps
 - Team-authored synthetic evaluation set: 26/26 expected issues, 0 false positives (a regression benchmark, not independent accuracy)
@@ -119,10 +123,16 @@ Working link:            Repository:            PDF:
 
 - [ ] Deadline/extension status confirmed in writing by the organisers (or eligibility clarified); proof saved
 - [ ] Submission mode confirmed (team leader only vs every member)
-- [ ] Repository pushed to a public GitHub repo; link opens in a private window
-- [ ] App deployed; URL opens in a private window; **Launch demo workspace** works
-- [ ] In the deployed app: run the *Unsupported claims* sample → findings → open evidence → accept a fix → submit → switch to Reviewer → approve
+- [x] Repository pushed to a public GitHub repo (https://github.com/rudreshthakur/BRANDGUARD-AI) *(reported by the team)*
+- [x] App deployed on Render (https://brandguard-ai-hndd.onrender.com); opens without login *(reported by the team)*
+- [ ] Open `https://brandguard-ai-hndd.onrender.com/api/health` and confirm `"database_backend": "postgresql"` (available after this update is deployed)
+- [ ] Live: **Launch demo workspace** → *Unsupported claims* sample → Run brand audit → open a citation (evidence drawer)
+- [ ] Live: *Outdated specification* sample → **Accept** the fix → version 2 appears → **Re-run brand audit** → **Submit for review**
+- [ ] Live: switch role to **Reviewer** → add a note → **Approve**; on another item, **Request changes** with a note
+- [ ] Live: switch role to **Admin** → Brand Knowledge → upload the sample `Northstar_Brand_Guidelines_v4_draft.txt` as a new version → it shows a warning and stays pending → approve it
+- [ ] Live: Brand Drift and Visual Inspector pages load; Audit History shows the actions above
+- [ ] Repeat the first live check in a private/incognito window
 - [ ] PDF link opens without sign-in
-- [ ] TODOs in this file completed (links, contributions, other AI tools)
+- [ ] Remaining TODOs in this file completed (individual contributions, other AI tools, deadline evidence)
 - [ ] No secrets in the repo (`git grep -i "api_key\|secret"` shows only placeholders)
 - [ ] Service warmed up shortly before judging (free tier cold starts)

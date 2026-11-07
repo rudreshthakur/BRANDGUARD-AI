@@ -32,7 +32,7 @@ An independent check of what the documentation claims against what the code does
 | Check | Result |
 |---|---|
 | Secrets / API keys | None found (`git grep` for key patterns; `.env` ignored; `.env.example` holds placeholders only) |
-| Commit history | 6+ genuine commits on 7 Nov 2026 (IST evening). **Not rewritten or backdated.** |
+| Commit history | Genuine commits from 7 Nov 2026 (IST evening), plus GitHub's initial commit and a merge on 8 Nov when pushing to https://github.com/rudreshthakur/BRANDGUARD-AI. **Not rewritten or backdated.** |
 | Personal data | Member names appear in LICENSE, README and the report, as in the Round 1 proposal. **Commits are authored as "Team Khiladi 786" with a personal Gmail address**, which becomes public when pushed. The team should decide whether that is acceptable. We have **not** rewritten history to change it. Future commits can use a different address. |
 | Large or generated files | `node_modules`, `dist`, databases and test artifacts are git-ignored |
 | Licences | MIT for project code. PyMuPDF is AGPL-3.0 (noted in LICENSE). Fonts are SIL OFL. |
@@ -43,9 +43,60 @@ An independent check of what the documentation claims against what the code does
 |---|---|
 | `render.yaml` | Parses; defines web service `brandguard-ai` (Docker, `/api/health`) and database `brandguard-db` |
 | Production path | Built frontend served by FastAPI; full test suite passes on PostgreSQL 16 from a clean venv |
-| Docker image | **Not built** (no Docker daemon in the build environment) |
-| Live deployment | **Not done.** No hosting credentials. No URL exists. |
+| Docker image | Not built by us locally (no Docker daemon). **Render built it successfully** from the same Dockerfile during deployment (reported by the team). |
+| Live deployment | **Live:** https://brandguard-ai-hndd.onrender.com (Render web service + Render PostgreSQL 18), deployed by the team on 8 Nov 2026. See the update below for what has and hasn't been verified. |
 
 ## Deadline
 
 See SUBMISSION.md. The original deadline was 7 Nov 2026, 10:00 AM IST, and all commits are later that day. **No evidence of an extension has been supplied**, so none is claimed.
+
+
+---
+
+## Update: 8 November 2026 (after deployment)
+
+### What changed since the previous audit
+
+| Previous status | Current status | How verified |
+|---|---|---|
+| Not deployed; no URL | Live at https://brandguard-ai-hndd.onrender.com (Render, blueprint `brandguard-ai`, PostgreSQL 18) | Reported by the team. Our sandbox can't reach onrender.com, so **we could not open the live site ourselves.** |
+| Not on GitHub | Public at https://github.com/rudreshthakur/BRANDGUARD-AI, branch `main` | **Verified:** cloned it; its content is identical to our last release (`597d4f0`), plus GitHub's initial commit and a merge |
+| Test counts in docs | 58/58 backend tests (2 new tests added in this update) on SQLite and on local PostgreSQL 16 | Re-run on this update |
+
+### Production issues found in the Render configuration
+
+| Issue | Impact | Action |
+|---|---|---|
+| uvicorn only trusted forwarded headers from 127.0.0.1, so behind Render's proxy **every visitor appeared to come from the same IP** | The "30 demo workspaces per IP per hour" limit applied to **all judges combined** and could block demo launches during judging | **Fixed** in the Dockerfile (`--forwarded-allow-ips='*'`, safe because Render's proxy is the only ingress). Test added. Takes effect after the next Render deploy. |
+| No way to confirm from outside which database the live app uses | Couldn't verify the PostgreSQL connection | **Added** `database_backend` to `/api/health` (it reports `postgresql` or `sqlite`; never connection details). Takes effect after the next deploy. |
+| Free Render Postgres **expires 30 days after creation** (Render docs) | The demo stops working around **7–8 Dec 2026**; data is deleted 14 days later | Documented. Upgrade the database before then if needed. |
+| Free web service sleeps after 15 min idle (about 1 min to wake) | A judge's first visit can look broken | Documented. Open the URL shortly before judging. |
+| Expired-workspace cleanup relied on database cascades and had no test | Possible orphaned data on PostgreSQL | **Test added**; passes on SQLite and PostgreSQL. |
+| PostgreSQL version | Render runs 18; our tests ran on 16 | Low risk (standard SQL via SQLAlchemy). Noted. The team's live tests indicate the app works on 18. |
+
+### Is the live app on PostgreSQL?
+
+Very likely, but **not verified**. `render.yaml` wires `DATABASE_URL` from `brandguard-db`. If that variable were missing, the app would fall back to SQLite (the Dockerfile default), lose data on every restart, and still look healthy. Confirm with `https://brandguard-ai-hndd.onrender.com/api/health` after deploying this update: it should show `"database_backend": "postgresql"`.
+
+### Live workflow coverage
+
+| Flow | Live site | Automated (local) |
+|---|---|---|
+| Open without login | ✅ reported by team | ✅ E2E |
+| Audit violating content → findings with evidence | ✅ reported by team (5 findings) | ✅ |
+| Audit clean content → no findings | ✅ reported by team | ✅ |
+| Open evidence drawer | ⬜ not checked | ✅ |
+| Accept / edit / reject fix → new version | ⬜ not checked | ✅ |
+| Submit → Reviewer requests changes / approves | ⬜ not checked | ✅ |
+| Admin uploads and approves a guideline version | ⬜ not checked | ✅ |
+| Brand Drift, Visual Inspector, Audit History | ⬜ not checked | ✅ |
+| AI contextual analysis | ⬜ not configured (no API key); shows "unavailable" | contract tests only |
+
+### Round 3 and contributions
+
+- Round 3 improvements are labelled as **proposed, not built** in ROUND3_ROADMAP.md, SUBMISSION.md and the report.
+- Individual contributions remain **TODO**. Nothing has been attributed to any member.
+
+### Deadline
+
+Unchanged: the original deadline was 7 Nov 2026, 10:00 AM IST. Development, the GitHub push and the deployment all happened after it. **No official extension has been supplied, so none is claimed and eligibility is unconfirmed.**

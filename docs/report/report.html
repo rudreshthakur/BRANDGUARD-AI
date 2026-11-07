@@ -95,7 +95,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <div><span>7</span>Screenshots from the application</div><div><span>8</span>Technical architecture</div><div><span>9</span>Technology and implementation</div>
     <div><span>10</span>Evidence retrieval and analysis</div><div><span>11</span>Correction and approval workflow</div><div><span>12</span>Original plan vs implementation</div>
     <div><span>13</span>Features completed</div><div><span>14</span>Partially completed or omitted</div><div><span>15</span>Testing methodology and results</div>
-    <div><span>16</span>Known limitations</div><div><span>17</span>Team contributions</div><div><span>18</span>Three Round 3 improvements</div>
+    <div><span>16</span>Known limitations</div><div><span>17</span>Team contributions</div><div><span>18</span>Three proposed Round 3 improvements</div>
   </div>
 
   <div class="flow" style="margin-top:14pt">
@@ -106,8 +106,8 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <tr><td>Tagline</td><td>Brand governance, before publishing.</td></tr>
     <tr><td>Team</td><td>Khiladi 786 (four members)</td></tr>
     <tr><td>Members and planned roles</td><td>Sarthak Agrawal: team lead, integration, architecture, final demo · Rudresh Kumar: frontend / UI · Arpit Singh: AI, retrieval and evaluation · Pranjal Gautam: backend and database</td></tr>
-    <tr><td>Working application</td><td>Deployment pending (Render blueprint included). The link is added in the submission form once deployed.</td></tr>
-    <tr><td>Source repository</td><td>Public GitHub link added in the submission form.</td></tr>
+    <tr><td>Working application</td><td>https://brandguard-ai-hndd.onrender.com (Render; no login required)</td></tr>
+    <tr><td>Source repository</td><td>https://github.com/rudreshthakur/BRANDGUARD-AI</td></tr>
   </table>
   </div>
 </section>
@@ -257,7 +257,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <tr><td>Retrieval</td><td>BM25 (in-process)</td><td>Deterministic, needs no external keys, swappable for pgvector.</td></tr>
     <tr><td>AI (optional)</td><td>Anthropic or OpenAI-compatible API via httpx</td><td>Provider abstraction, temperature 0, strict JSON schema. Off by default.</td></tr>
     <tr><td>Visual</td><td>Pillow</td><td>Median-cut quantisation, CIE76 ΔE, WCAG 2.1 contrast.</td></tr>
-    <tr><td>Testing</td><td>pytest, Vitest, Playwright</td><td>56 backend tests, 6 frontend tests, 16-step E2E journey.</td></tr>
+    <tr><td>Testing</td><td>pytest, Vitest, Playwright</td><td>58 backend tests, 6 frontend tests, 16-step E2E journey.</td></tr>
     <tr><td>Deployment</td><td>Dockerfile, Render blueprint, Vercel config</td><td>Single-service or split hosting.</td></tr>
   </table>
   <h3>Security</h3>
@@ -359,7 +359,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <tr><td>Tone analysis</td><td><span class="tag t-part">Partial</span></td><td>Deterministic checks only, unless AI is configured.</td></tr>
     <tr><td>Roles and permissions</td><td><span class="tag t-part">Partial</span></td><td>Enforced server-side but driven by a demo switch. No user accounts.</td></tr>
     <tr><td>Rule extraction from documents</td><td><span class="tag t-part">Partial</span></td><td>Pattern-based proposals that require admin approval.</td></tr>
-    <tr><td>Public deployment</td><td><span class="tag t-part">Pending</span></td><td>Configuration ready; needs the team’s hosting account.</td></tr>
+    <tr><td>Public deployment</td><td><span class="tag t-part">Partial</span></td><td>Live on Render with PostgreSQL. Basic audits checked manually by the team; full workflow on the live site not yet verified.</td></tr>
     <tr><td>Logo matching, typography, layout</td><td><span class="tag t-no">Not built</span></td><td>Round 3 Improvement 1.</td></tr>
     <tr><td>Impact analysis and historical re-audit</td><td><span class="tag t-no">Not built</span></td><td>Round 3 Improvement 2. Fact and document versioning is already in place.</td></tr>
     <tr><td>Assignment, escalation, channel policy packs</td><td><span class="tag t-no">Not built</span></td><td>Round 3 Improvement 3.</td></tr>
@@ -371,9 +371,9 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
 
 <section>
   <h2><span class="n">15</span>Testing methodology and results</h2>
-  <p>All figures come from runs on 7 November 2026 against the submitted build.</p>
+  <p>Automated figures come from runs on 7–8 November 2026 against this build. Live-site results are reported by the team.</p>
   <div class="kpis">
-    <div><b>56 / 56</b><span>backend tests, on SQLite and on PostgreSQL 16</span></div>
+    <div><b>58 / 58</b><span>backend tests, on SQLite and on PostgreSQL 16</span></div>
     <div><b>16 / 16</b><span>end-to-end browser steps in a fresh context</span></div>
     <div><b>6 / 6</b><span>frontend unit tests; type check and build clean</span></div>
     <div><b>26 / 26</b><span>labelled issues found, 0 false positives, 8/8 clean items</span></div>
@@ -395,7 +395,7 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
     <tr><td>Admin-defined regex triggers could allow catastrophic backtracking; pathological input produced 900 findings</td><td>Fixed: triggers are plain phrases; findings capped at the 200 most severe with a notice.</td></tr>
     <tr><td>“by a third” (fractions in words) not detected</td><td>Open; see limitations.</td></tr>
   </table>
-  <div class="note">Not run: building the Docker image (no Docker daemon was available while building; its steps were verified individually), and testing the public URL (not yet deployed).</div>
+  <div class="note">Live deployment (https://brandguard-ai-hndd.onrender.com): the team checked it manually on 8 Nov 2026. It opens without login, a violating text produced 5 findings with evidence and fixes, and a clean text produced none. The full correction-and-approval workflow has not yet been verified on the live site. Not run by us: building the Docker image locally (no Docker daemon; Render built it from the same Dockerfile).</div>
 
 </section>
 <section>
@@ -426,8 +426,8 @@ figcaption { font-size: 8.5pt; color: var(--m); margin-top: 4pt; }
 </section>
 <section>
   <div>
-  <h2><span class="n">18</span>Three Round 3 improvements</h2>
-  <p>Each builds on Round 2 code without an architectural rewrite. Planned build order: 2 → 3 → 1.</p>
+  <h2><span class="n">18</span>Three proposed Round 3 improvements</h2>
+  <p>These are proposals for Round 3. <b>None of them is built in this Round 2 version.</b> Each builds on Round 2 code without an architectural rewrite. Planned build order: 2 → 3 → 1.</p>
   <table>
     <tr><th style="width:40mm">Improvement</th><th style="width:52mm">Builds on (Round 2)</th><th>New capability and acceptance tests</th></tr>
     <tr><td>1. Advanced Visual Brand Identity Inspector</td><td>Palette ΔE matching, WCAG checker, palette evidence</td><td>Approved logo library; logo detection (pHash + ORB) for found, missing, wrong variant and distortion; OCR text-region contrast; layout and safe-zone rules; bounding-box overlays in the review workflow. <i>Tests:</i> correct logo passes; recoloured or stretched logo is flagged; low-contrast text block fails AA. Precision and recall are measured on 30+ labelled creatives.</td></tr>

@@ -89,7 +89,7 @@ Legend: ✅ complete and tested · 🟡 partial (scope stated) · ⬜ not built 
 | PostgreSQL support | ✅ | Full test suite passes on PostgreSQL 16. |
 | pgvector / semantic retrieval | ⬜ | BM25 lexical retrieval behind a swappable interface. |
 | Supabase Auth / real accounts | ⬜ | Documented production plan. |
-| Public deployment | ⬜ | Render blueprint and Dockerfile ready; needs the team's Render account (see SUBMISSION.md). |
+| Public deployment | 🟡 | Live on Render: https://brandguard-ai-hndd.onrender.com (web service + Render PostgreSQL 18). Basic audits checked manually by the team; full workflow on the live site not yet verified. |
 
 ## Changes from the Round 1 plan
 

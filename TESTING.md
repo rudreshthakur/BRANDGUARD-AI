@@ -1,14 +1,14 @@
 # Testing
 
-All results below come from actual runs on **7 November 2026 (UTC)** against commit `HEAD` of this repository. Nothing is estimated.
+All automated results below come from actual runs on **7–8 November 2026** against this repository (latest re-run on the commit that adds the health-check database field and the proxy fix). Live-site results are reported by the team and marked as such. Nothing is estimated.
 
 ## Summary of the latest run
 
 | Check | Command | Result |
 |---|---|---|
-| Backend unit + API tests (SQLite) | `cd backend && python -m pytest -q` | **56 passed, 0 failed** |
-| Backend tests on PostgreSQL 16 (clean venv from `requirements.txt`) | `DATABASE_URL=postgresql://… python -m pytest -q` | **56 passed, 0 failed** |
-| AI provider contract tests (fake HTTP transport) | included in the 56 above | Anthropic and OpenAI-compatible request payloads, headers and URLs; response parsing; fallback on 401, 500, empty responses and timeouts; missing-key, missing-model and unknown-provider reporting |
+| Backend unit + API tests (SQLite) | `cd backend && python -m pytest -q` | **58 passed, 0 failed** |
+| Backend tests on PostgreSQL 16 (clean venv from `requirements.txt`) | `DATABASE_URL=postgresql://… python -m pytest -q` | **58 passed, 0 failed** |
+| AI provider contract tests (fake HTTP transport) | included in the 58 above | Anthropic and OpenAI-compatible request payloads, headers and URLs; response parsing; fallback on 401, 500, empty responses and timeouts; missing-key, missing-model and unknown-provider reporting |
 | **Live AI model** | – | **Not tested.** No API key was available. |
 | Frontend type check | `cd frontend && npm run typecheck` | **No errors** |
 | Frontend unit tests (Vitest) | `npm test` | **6 passed** |
@@ -17,7 +17,8 @@ All results below come from actual runs on **7 November 2026 (UTC)** against com
 | End-to-end judge journey (Playwright, fresh context with no storage) | `python e2e/test_judge_journey.py` | **16 of 16 steps passed**, no console errors |
 | Labelled synthetic evaluation set | `cd backend && python -m eval.run_eval` | **26/26 expected issues found, 0 false positives, 8/8 compliant items clean, 8/8 approved claims verified** |
 | Docker image build | `docker build .` | **Not run.** The authoring environment had no Docker daemon. The image steps were verified individually (see SETUP.md). |
-| Public deployment check | – | **Not run.** The app is not yet deployed; see SUBMISSION.md. |
+| Live deployment, basic checks (https://brandguard-ai-hndd.onrender.com) | manual, by the team, 8 Nov 2026 | Opens without login. Violating text: 5 findings (4 high, 1 low) with references, evidence and fixes. Clean text: 0 open findings. *Reported by the team; not re-run by the automated suite or by us.* |
+| Live deployment, full workflow and database | – | **Not yet verified on the live site.** Correction → submit → review → approve, admin upload, and the database backend still need checking (see SUBMISSION.md live checklist). |
 
 ## Required judge test cases → automated tests
 
@@ -42,7 +43,7 @@ All results below come from actual runs on **7 November 2026 (UTC)** against com
 | 17 | Backend failures give understandable errors | `test_backend_errors_are_understandable`, `test_malformed_ai_output_falls_back_gracefully` |
 | 18 | Unsupported upload formats handled | `test_unsupported_upload_formats` |
 
-Additional coverage: AI provider contracts (`tests/test_llm_providers.py`), workspace isolation, role permissions, DOCX/PDF metadata, guideline versioning and comparison, visual palette and contrast, brand drift from real data (including excluding samples), security headers, diff endpoint, re-approval after editing approved content.
+Additional coverage: expired demo workspace cleanup, per-client rate limiting, AI provider contracts (`tests/test_llm_providers.py`), workspace isolation, role permissions, DOCX/PDF metadata, guideline versioning and comparison, visual palette and contrast, brand drift from real data (including excluding samples), security headers, diff endpoint, re-approval after editing approved content.
 
 ## End-to-end journey (Playwright)
 

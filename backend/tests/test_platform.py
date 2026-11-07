@@ -6,7 +6,8 @@ from app.services import llm
 
 
 def test_health_and_status(client):
-    assert client.get("/api/health").json()["database"] is True
+    h = client.get("/api/health").json()
+    assert h["database"] is True and h["database_backend"] in ("sqlite", "postgresql")
     s = client.get("/api/system/status").json()
     assert s["ai"]["enabled"] is False  # TC16: no credentials -> still works
 
@@ -209,3 +210,37 @@ def test_findings_are_capped_for_pathological_input(ws):
     d = ws.audit_text(" ".join(["Pulse gives 50% more focus and is the best tool!!!"] * 300)[:19999])
     assert len(d["findings"]) <= 200
     assert d["latest_audit"]["stats"]["truncated"] > 0
+
+
+def test_expired_demo_workspaces_are_cleaned_up_with_their_data(client):
+    from datetime import datetime, timedelta, timezone
+    from sqlalchemy import func, select
+    from app.db import SessionLocal
+    from app.models import Submission, Workspace
+    from app.routers.public import cleanup_expired
+    old = client.post("/api/workspaces/demo").json()["workspace_id"]
+    fresh = client.post("/api/workspaces/demo").json()["workspace_id"]
+    with SessionLocal() as db:
+        db.get(Workspace, old).created_at = datetime.now(timezone.utc) - timedelta(hours=100)
+        db.commit()
+        assert cleanup_expired(db) >= 1
+        assert db.get(Workspace, old) is None and db.get(Workspace, fresh) is not None
+        assert db.scalar(select(func.count()).select_from(Submission).where(Submission.workspace_id == old)) == 0
+
+
+def test_rate_limit_is_per_client_ip(client):
+    from app.routers import public
+    public._hits.clear()
+    from app.config import settings
+    saved = settings.demo_rate_limit_per_hour
+    object.__setattr__(settings, "demo_rate_limit_per_hour", 1)
+    try:
+        public._rate_limit("1.1.1.1")
+        public._rate_limit("2.2.2.2")  # different visitor is not blocked
+        import pytest
+        from fastapi import HTTPException
+        with pytest.raises(HTTPException):
+            public._rate_limit("1.1.1.1")
+    finally:
+        object.__setattr__(settings, "demo_rate_limit_per_hour", saved)
+        public._hits.clear()

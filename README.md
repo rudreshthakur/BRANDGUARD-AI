@@ -4,11 +4,13 @@
 
 Team **Khiladi 786** · CodeNexus India 2026 · Round 2 build
 
+**Live demo:** https://brandguard-ai-hndd.onrender.com (no login needed; free hosting, so allow about a minute for the first load) · **Source:** https://github.com/rudreshthakur/BRANDGUARD-AI
+
 > Most AI marketing tools help create content. BrandGuard helps organisations decide whether that content is safe, accurate and consistent enough to publish, with traceable reasons and human control.
 
 ## Try it in 30 seconds
 
-1. Open the app and click **Launch demo workspace**. No sign-up is needed. You get a private copy of **Northstar Labs**, a fictional brand with synthetic guidelines, facts and sample content.
+1. Open the [live app](https://brandguard-ai-hndd.onrender.com) and click **Launch demo workspace**. No sign-up is needed. You get a private copy of **Northstar Labs**, a fictional brand with synthetic guidelines, facts and sample content.
 2. In **Content Auditor**, pick a sample (start with *Unsupported claims*) and click **Run brand audit**.
 3. Click any citation to open the exact source passage. Accept, edit or reject a suggested fix; each accepted fix becomes a new version.
 4. Click **Submit for review**, switch the role at the top to **Reviewer**, and approve or request changes.

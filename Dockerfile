@@ -20,4 +20,5 @@ RUN mkdir -p /data && useradd -r -u 10001 brandguard && chown -R brandguard /dat
 USER brandguard
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import urllib.request,os;urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\",\"8000\")}/api/health')"
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers"]
+# Render terminates TLS at its proxy; trust its X-Forwarded-For so per-visitor rate limits see real client IPs
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

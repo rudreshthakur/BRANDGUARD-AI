@@ -62,7 +62,9 @@ FastAPI serves `frontend/dist` (SPA fallback included) and the API from the same
 3. Optional: set `BRANDGUARD_LLM_PROVIDER` and `BRANDGUARD_LLM_API_KEY` in the dashboard.
 4. Open the service URL in a private window, click **Launch demo workspace**, and run the checklist in TESTING.md.
 
-Notes: free Render services sleep when idle, so the first request after a sleep can take about 30–60 s. Warm the URL shortly before judging. Free Render Postgres instances expire after a limited period; check Render's current terms, or point `DATABASE_URL` at Supabase Postgres instead.
+Notes (Render's free tier, per Render's docs): web services sleep after 15 minutes without traffic and take about a minute to wake, so open the URL shortly before judging. Free Render Postgres databases **expire 30 days after creation**, with a 14-day grace period before deletion; upgrade the database, or point `DATABASE_URL` at another Postgres, before then. To confirm which database is in use, open `/api/health` and check `database_backend`.
+
+Current deployment: https://brandguard-ai-hndd.onrender.com (blueprint `brandguard-ai`, repo https://github.com/rudreshthakur/BRANDGUARD-AI, branch `main`).
 
 ## Deploy option B: Docker anywhere
 

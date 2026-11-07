@@ -32,7 +32,8 @@ def health(db: Session = Depends(get_db)):
         db_ok = True
     except Exception:  # noqa: BLE001
         db_ok = False
-    return {"status": "ok" if db_ok else "degraded", "database": db_ok, "version": APP_VERSION}
+    return {"status": "ok" if db_ok else "degraded", "database": db_ok,
+            "database_backend": db.get_bind().dialect.name, "version": APP_VERSION}
 
 
 @router.get("/system/status")
