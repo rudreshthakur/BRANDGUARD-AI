@@ -1,0 +1,47 @@
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/source-serif-4/400.css";
+@import "@fontsource/source-serif-4/600.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-font-smoothing: antialiased; }
+  body { @apply bg-paper font-sans text-[15px] leading-6 text-ink; }
+  :focus-visible { @apply outline-none ring-2 ring-proof ring-offset-2 ring-offset-paper; }
+  h1, h2, h3 { @apply text-ink; letter-spacing: -0.01em; }
+  ::selection { background: #cdd7f7; }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-proof text-white hover:bg-proof-dark; }
+  .btn-ink { @apply btn bg-ink text-white hover:bg-ink-soft; }
+  .btn-quiet { @apply btn border border-paper-rule bg-white text-ink hover:bg-paper; }
+  .btn-ghost { @apply btn text-graphite hover:bg-paper-edge/60 hover:text-ink; }
+  .btn-danger { @apply btn border border-red-200 bg-white text-sev-critical hover:bg-red-50; }
+  .panel { @apply rounded-lg border border-paper-edge bg-white; }
+  .field { @apply w-full rounded-md border border-paper-rule bg-white px-3 py-2 text-sm text-ink placeholder:text-graphite-faint focus:border-proof focus:outline-none focus:ring-2 focus:ring-proof/20; }
+  .label { @apply mb-1 block text-sm font-medium text-graphite; }
+  .chip { @apply inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset; }
+  .tab { @apply -mb-px border-b-2 border-transparent px-1 pb-2.5 text-sm font-medium text-graphite-mute hover:text-ink; }
+  .tab-active { @apply border-ink text-ink; }
+
+  /* Redline manuscript marks — colour encodes evidence status */
+  .manuscript { @apply font-serif text-[19px] leading-[1.75] text-ink; }
+  .mark { @apply cursor-pointer rounded-[2px] px-[1px] transition-colors; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .mark-rule { background: #fdecec; text-decoration-line: underline; text-decoration-color: #a1161b; }
+  .mark-conflict { background: #fdeee4; text-decoration-line: underline; text-decoration-color: #c2410c; }
+  .mark-outdated { background: #fdf3e1; text-decoration-line: underline; text-decoration-style: dashed; text-decoration-color: #b4540a; }
+  .mark-gap { background: #f1ebfb; text-decoration-line: underline; text-decoration-style: wavy; text-decoration-color: #7a4bc2; text-decoration-thickness: 1.5px; }
+  .mark-security { background: #eceff3; text-decoration-line: line-through; text-decoration-color: #3d4556; }
+  .mark-ctx { background: #eaeefb; text-decoration-line: underline; text-decoration-style: dotted; text-decoration-color: #2949c6; }
+  .mark-ok { text-decoration-line: underline; text-decoration-color: #18794e; text-decoration-thickness: 1.5px; }
+  .mark-active { outline: 2px solid #2949c6; outline-offset: 1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
